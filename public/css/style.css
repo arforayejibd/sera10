@@ -5230,12 +5230,24 @@ img, video, iframe, embed, object {
   }
 
   .hero-main-title {
-    font-size: 17px !important;
+    font-size: 18px !important;
     line-height: 1.35;
   }
 
   .hero-main-body {
     padding: 16px 14px;
+  }
+
+  .hero-main-excerpt {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .hero-main-footer {
+    font-size: 12.5px;
+    padding-top: 10px;
   }
 
   .hero-highlights-box {
@@ -5249,32 +5261,33 @@ img, video, iframe, embed, object {
   }
 
   .hero-main-desc {
-    font-size: 14.5px;
-    margin-bottom: 14px;
+    font-size: 14px;
+    line-height: 1.55;
+    margin-bottom: 12px;
   }
 
   .btn-cta-review {
-    font-size: 14px;
+    font-size: 13.5px;
     padding: 8px 16px;
     border-radius: 8px;
   }
 
-  /* Secondary Ranked Cards (Mobile 2, 3, 4) */
+  /* Secondary Ranked Cards (Mobile 2, 3, 4, 5) */
   .hero-side-list {
-    gap: 10px;
+    gap: 12px;
   }
 
   .hero-side-card {
-    padding: 10px 12px;
+    padding: 12px;
     gap: 12px;
     border-radius: 14px;
     align-items: center;
   }
 
   .hero-side-thumb {
-    width: 82px;
-    height: 82px;
-    min-width: 82px;
+    width: 90px;
+    height: 90px;
+    min-width: 90px;
     border-radius: 10px;
   }
 
@@ -5282,12 +5295,12 @@ img, video, iframe, embed, object {
     top: 4px;
     left: 4px;
     font-size: 11px;
-    padding: 1px 5px;
+    padding: 2px 6px;
     border-radius: 4px;
   }
 
   .hero-side-info {
-    gap: 3px;
+    gap: 4px;
     min-width: 0;
   }
 
@@ -5297,19 +5310,21 @@ img, video, iframe, embed, object {
   }
 
   .hero-side-cat {
-    font-size: 11.5px;
-    padding: 1px 6px;
+    font-size: 12px;
+    padding: 2px 7px;
     border-radius: 5px;
   }
 
   .hero-side-score {
-    font-size: 12px;
+    font-size: 13px;
+    font-weight: 800;
   }
 
   .hero-side-title {
-    font-size: 14.5px;
+    font-size: 16.5px !important;
+    font-weight: 700;
     line-height: 1.35;
-    margin: 1px 0 3px;
+    margin: 2px 0 4px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -5318,8 +5333,8 @@ img, video, iframe, embed, object {
 
   .hero-side-bottom {
     margin-top: 4px;
-    padding-top: 4px;
-    font-size: 11.5px;
+    padding-top: 6px;
+    font-size: 12.5px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -5333,7 +5348,7 @@ img, video, iframe, embed, object {
   }
 
   .hero-side-link {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     white-space: nowrap;
     flex-shrink: 0;
