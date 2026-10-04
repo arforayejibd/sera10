@@ -244,7 +244,7 @@
         <div class="review-section-header">
           <div class="section-title-wrap">
             <span class="section-title-indicator"></span>
-            <h2 class="section-heading">টেক ও স্মার্ট গ্যাজেট রিভিউ</h2>
+            <h2 class="section-heading">টেক ও স্মার্ট গ্যাজেট</h2>
           </div>
           <a href="/category/tech" class="section-link-more">
             <span>আরও টেক রিভিউ</span>
@@ -259,55 +259,6 @@
         </div>
       </section>
     <% } %>
-
-    <!-- 7. AFFILIATE BUYER COMPARISON TABLE -->
-    <section class="affiliate-comparison-table-wrap">
-      <div class="comparison-table-head">
-        <div class="comparison-table-title-group">
-          <span class="comparison-table-sub">র‍্যাপিড কম্প্যারিজম</span>
-          <h3 class="comparison-table-heading">জনপ্রিয় প্রোডাক্ট রিভিউ তুলনামূলক সারসংক্ষেপ</h3>
-        </div>
-        <span class="comparison-table-badge">
-          📊 রেটিং ও ফিচারের ওপর ভিত্তি করে নির্বাচিত
-        </span>
-      </div>
-
-      <div class="table-responsive-scroll">
-        <table class="affiliate-table">
-          <thead>
-            <tr>
-              <th class="th-product">পণ্য / রিভিউ বিষয়</th>
-              <th class="th-category">ক্যাটাগরি</th>
-              <th class="th-score">স্কোর</th>
-              <th class="th-features">প্রকাশের সময়</th>
-              <th class="th-action">অ্যাকশন</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% if (featuredPosts && featuredPosts.length) { %>
-              <% featuredPosts.slice(0, 5).forEach((p, idx) => { %>
-                <tr>
-                  <td class="td-product">
-                    <a href="/post/<%= encodeURIComponent(p.slug || '') %>" class="table-product-link">
-                      <span class="table-rank-num"><%= toBengaliNumber(idx+1) %></span>
-                      <span class="table-product-title"><%= p.title %></span>
-                    </a>
-                  </td>
-                  <td class="td-category"><%= p.category_name || 'সাধারণ' %></td>
-                  <td class="td-score">★ <%= toBengaliNumber(p.rating_score || '4.8') %></td>
-                  <td class="td-features"><%= formatBengaliDate(p.published_at || p.created_at) %></td>
-                  <td class="td-action">
-                    <a href="/post/<%= encodeURIComponent(p.slug || '') %>" class="btn-table-action">
-                      রিভিউ দেখুন &raquo;
-                    </a>
-                  </td>
-                </tr>
-              <% }) %>
-            <% } %>
-          </tbody>
-        </table>
-      </div>
-    </section>
 
     <!-- 8. WHY TRUST US (PROMISES) -->
     <section class="affiliate-trust-grid">
