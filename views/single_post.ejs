@@ -120,17 +120,26 @@
 
         <!-- Table of Contents (TOC) -->
         <% if (typeof toc !== 'undefined' && toc && toc.length > 1) { %>
-          <div style="background: var(--bg-muted); border: 1px solid var(--border-color); border-radius: 16px; padding: 18px 20px; margin: 24px 0;">
-            <div style="font-weight: 800; font-size: 16px; color: var(--text-heading); display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="var el = document.getElementById('tocList'); el.style.display = (el.style.display === 'none' ? 'block' : 'none');">
+          <div class="article-toc-box" style="background: var(--bg-muted); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px 20px; margin: 24px 0; transition: all 0.2s ease;">
+            <div 
+              style="font-weight: 800; font-size: 16px; color: var(--text-heading); display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none;" 
+              onclick="var el = document.getElementById('tocList'); var btn = document.getElementById('tocToggleText'); var isClosed = (el.style.display === 'none' || !el.style.display); if(isClosed){ el.style.display = 'flex'; btn.innerHTML = 'লুকান ▴'; } else { el.style.display = 'none'; btn.innerHTML = 'দেখুন ▾'; }"
+              role="button"
+              tabindex="0"
+              aria-expanded="false"
+              aria-controls="tocList"
+            >
               <span style="display: flex; align-items: center; gap: 8px;">
                 <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
                 এই আর্টিকেলের সূচিপত্র (Table of Contents)
               </span>
-              <span style="font-size: 13px; color: var(--brand-primary); font-weight: 700;">[টগল করুন]</span>
+              <span id="tocToggleText" style="font-size: 13.5px; color: var(--brand-primary); font-weight: 700; background: #eaf5e9; padding: 3px 10px; border-radius: 20px;">
+                দেখুন ▾
+              </span>
             </div>
-            <ul style="margin: 12px 0 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px;" id="tocList">
+            <ul style="margin: 14px 0 0 0; padding-top: 12px; border-top: 1px dashed var(--border-color); list-style: none !important; display: none; flex-direction: column; gap: 8px;" id="tocList">
               <% toc.forEach((item, index) => { %>
-                <li style="<%= item.level === 3 ? 'margin-left: 20px;' : 'font-weight: 600;' %> font-size: 15px;">
+                <li style="<%= item.level === 3 ? 'margin-left: 20px;' : 'font-weight: 600;' %> font-size: 15px; list-style: none !important; display: block !important;">
                   <a href="#<%= item.id %>" style="color: var(--text-main); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: color 0.15s ease;">
                     <span style="color: var(--brand-primary); font-weight: 800;">•</span>
                     <%= item.text %>
@@ -161,45 +170,35 @@
           </div>
         <% } %>
 
-        <!-- Facebook Comments Area -->
-        <section class="article-comments-area" id="comments" style="margin-top: 40px; padding-top: 30px; border-top: 1px solid var(--border-color);">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-            <h3 style="font-size: 20px; font-weight: 800; color: var(--text-heading); display: flex; align-items: center; gap: 10px; margin: 0;">
-              <svg width="22" height="22" fill="#1877f2" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        <!-- Facebook Comments Section (iframe-based, no App ID needed) -->
+        <section class="article-comments-area" id="comments" style="margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border-color);">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+            <h3 style="font-size: 21px; font-weight: 800; color: var(--text-heading); display: flex; align-items: center; gap: 10px; margin: 0;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="#1877f2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
               <span>পাঠক মন্তব্য ও মতামত (Facebook Comments)</span>
             </h3>
-            <span style="font-size: 13px; color: var(--text-muted);">আপনার ফেসবুক অ্যাকাউন্ট দিয়ে সরাসরি মন্তব্য করুন</span>
+            <span style="font-size: 13.5px; color: var(--text-muted);">আপনার ফেসবুক অ্যাকাউন্ট দিয়ে সরাসরি মন্তব্য করুন</span>
           </div>
 
-          <div class="fb-comments-box-wrapper" style="background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 16px; padding: 18px 20px; box-shadow: var(--shadow-sm); min-height: 200px; overflow-x: auto;">
-            <!-- Facebook SDK Root -->
-            <div id="fb-root"></div>
-            
-            <% 
-              const fbCanonicalUrl = 'https://sera10.com/post/' + encodeURIComponent(post.slug);
-            %>
+          <% 
+            const fbUrl = 'https://sera10.com/post/' + post.slug;
+            const fbCommentsIframeSrc = 'https://www.facebook.com/plugins/comments.php?href=' + encodeURIComponent(fbUrl) + '&width=100%25&numposts=10&order_by=reverse_time&locale=bn_BD';
+          %>
 
-            <!-- Facebook Comments Plugin Box -->
-            <div class="fb-comments" 
-                 data-href="<%= fbCanonicalUrl %>" 
-                 data-width="100%" 
-                 data-numposts="10" 
-                 data-order-by="reverse_time">
-            </div>
+          <div class="fb-comments-box-wrapper" style="background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); width: 100%;">
+            <iframe 
+              src="<%= fbCommentsIframeSrc %>" 
+              width="100%" 
+              height="500" 
+              style="border: none; overflow: hidden; display: block;" 
+              scrolling="no" 
+              frameborder="0" 
+              allowTransparency="true" 
+              allow="encrypted-media"
+              title="Facebook Comments"
+            ></iframe>
           </div>
         </section>
-
-        <!-- Facebook Comments SDK Loader -->
-        <script async defer crossorigin="anonymous" src="https://connect.facebook.net/bn_IN/sdk.js#xfbml=1&version=v20.0"></script>
-        <script>
-          window.addEventListener('load', function() {
-            setTimeout(function() {
-              if (window.FB && typeof window.FB.XFBML !== 'undefined') {
-                window.FB.XFBML.parse();
-              }
-            }, 300);
-          });
-        </script>
       </article>
 
       <!-- Sidebar Column (30%) -->

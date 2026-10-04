@@ -1047,13 +1047,47 @@ button, input, textarea, select {
 }
 
 .article-content-body ul,
-.article-content-body ol {
-  margin: 16px 0 24px 24px;
+.single-article-content-body ul {
+  list-style: disc outside !important;
+  list-style-type: disc !important;
+  margin: 16px 0 24px;
+  padding-left: 28px !important;
   line-height: 1.8;
 }
 
-.article-content-body li {
-  margin-bottom: 8px;
+.article-content-body ol,
+.single-article-content-body ol {
+  list-style: decimal outside !important;
+  list-style-type: decimal !important;
+  margin: 16px 0 24px;
+  padding-left: 28px !important;
+  line-height: 1.8;
+}
+
+.article-content-body ul ul,
+.single-article-content-body ul ul {
+  list-style-type: circle !important;
+  margin: 8px 0 8px;
+  padding-left: 24px !important;
+}
+
+.article-content-body ul ul ul,
+.single-article-content-body ul ul ul {
+  list-style-type: square !important;
+}
+
+.article-content-body ol ol,
+.single-article-content-body ol ol {
+  list-style-type: lower-alpha !important;
+  margin: 8px 0 8px;
+  padding-left: 24px !important;
+}
+
+.article-content-body li,
+.single-article-content-body li {
+  margin-bottom: 10px;
+  line-height: 1.8;
+  display: list-item !important;
 }
 
 .article-content-body img {
@@ -4519,17 +4553,26 @@ html.theme-dark .single-article-content-body a:not(.btn-cta-review):not(.wp-bloc
 
 /* Article Lists, Quotes, Tables, and Gutenberg Styles */
 .article-content-body ul,
-.article-content-body ol,
-.single-article-content-body ul,
-.single-article-content-body ol {
+.single-article-content-body ul {
+  list-style: disc outside !important;
+  list-style-type: disc !important;
   margin: 16px 0 24px;
-  padding-left: 24px;
+  padding-left: 28px !important;
+}
+
+.article-content-body ol,
+.single-article-content-body ol {
+  list-style: decimal outside !important;
+  list-style-type: decimal !important;
+  margin: 16px 0 24px;
+  padding-left: 28px !important;
 }
 
 .article-content-body li,
 .single-article-content-body li {
   margin-bottom: 8px;
   line-height: 1.75;
+  display: list-item !important;
 }
 
 .article-content-body blockquote,
