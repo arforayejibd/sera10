@@ -822,3 +822,116 @@ exports.getTagPage = async (req, res) => {
   }
 };
 
+// All Posts / Blog Archive Page (/blog, /all-posts, /posts)
+exports.getAllPostsPage = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = 20;
+    const offset = (page - 1) * limit;
+    const sort = req.query.sort || 'latest';
+
+    let sortClause = 'ORDER BY p.published_at DESC, p.id DESC';
+    if (sort === 'popular') {
+      sortClause = 'ORDER BY p.views DESC, p.published_at DESC';
+    } else if (sort === 'rating') {
+      sortClause = 'ORDER BY p.rating_score DESC, p.rating_count DESC, p.published_at DESC';
+    } else if (sort === 'oldest') {
+      sortClause = 'ORDER BY p.published_at ASC, p.id ASC';
+    }
+
+    const totalRow = await db.prepare("SELECT COUNT(*) AS total FROM posts WHERE status = 'publish'").get();
+    const totalPosts = totalRow ? totalRow.total : 0;
+    const totalPages = Math.ceil(totalPosts / limit) || 1;
+
+    const posts = await db.prepare(`
+      SELECT p.id, p.title, p.slug, p.excerpt, p.content, p.featured_image, p.published_at, p.views, 
+             p.rating_score, p.rating_count, p.category_id, p.subcategory_id, p.is_featured,
+             u.display_name AS author_name, u.nicename AS author_slug, u.avatar AS author_avatar,
+             c.name AS category_name, c.slug AS category_slug,
+             sc.name AS subcategory_name, sc.slug AS subcategory_slug
+      FROM posts p
+      LEFT JOIN users u ON p.author_id = u.id
+      LEFT JOIN categories c ON p.category_id = c.id
+      LEFT JOIN categories sc ON p.subcategory_id = sc.id
+      WHERE p.status = 'publish'
+      ${sortClause}
+      LIMIT ? OFFSET ?
+    `).all(limit, offset);
+
+    const popularCategories = await db.prepare(`
+      SELECT id, name, slug, count 
+      FROM categories 
+      WHERE count > 0 AND slug != 'uncategorized'
+      ORDER BY count DESC 
+      LIMIT 10
+    `).all();
+
+    const topCategories = await db.prepare(`
+      SELECT id, name, slug, count 
+      FROM categories 
+      WHERE parent_id = 0 AND count > 0 AND slug != 'uncategorized'
+      ORDER BY count DESC 
+      LIMIT 8
+    `).all();
+
+    const subcategories = topCategories.map(c => ({
+      id: c.id,
+      name: c.name,
+      slug: c.slug,
+      count: c.count,
+      url: `/category/${encodeURIComponent(c.slug)}`
+    }));
+
+    const breadcrumbs = [
+      { name: 'প্রচ্ছদ', url: '/' },
+      { name: 'সকল ব্লগ ও রিভিউ', url: '/blog' }
+    ];
+
+    const seo = generateSeoMeta({
+      title: `সকল ব্লগ ও রিভিউ | ${SITE_NAME}`,
+      description: 'সেরা ১০-এর সকল সর্বশেষ কেনাকাটার গাইড, প্রোডাক্ট রিভিউ, শীর্ষ ১০ তালিকা ও তথ্যবহুল ব্লগ আর্টিকেল এক নজরে।',
+      url: '/blog',
+      schema: getBreadcrumbSchema(breadcrumbs)
+    });
+
+    res.render('category', {
+      category: {
+        id: 0,
+        name: 'সকল ব্লগ ও রিভিউ',
+        slug: 'blog',
+        description: 'সেরা ১০-এর সকল কেনাকাটার গাইড, প্রোডাক্ট রিভিউ, শীর্ষ ১০ তালিকা এবং বিশেষজ্ঞ মতামত এক নজরে।'
+      },
+      parentCategory: null,
+      activeSubCategory: null,
+      subcategories,
+      activeSubSlug: null,
+      popularCategories,
+      posts,
+      sort,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalItems: totalPosts,
+        basePath: `/blog${sort !== 'latest' ? '?sort=' + sort : ''}`
+      },
+      seo,
+      currentPath: req.originalUrl,
+      toBengaliNumber,
+      formatBengaliDate,
+      formatCardExcerpt,
+      editorialBoard: EDITORIAL_BOARD,
+      contact: CONTACT
+    });
+  } catch (err) {
+    console.error('Error in getAllPostsPage:', err);
+    res.status(500).render('error', {
+      title: 'সার্ভার ত্রুটি',
+      message: 'লেখাগুলো লোড করা যায়নি।',
+      seo: generateSeoMeta({ title: 'সার্ভার ত্রুটি' }),
+      editorialBoard: EDITORIAL_BOARD,
+      contact: CONTACT
+    });
+  }
+};
+
+

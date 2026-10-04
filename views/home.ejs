@@ -58,7 +58,31 @@
       </div>
     </section>
 
-    <!-- 3. HERO MAGAZINE BENTO SHOWCASE: #1 Pick & Ranked 2, 3, 4 -->
+    <!-- 3. LATEST BUYING GUIDES & ARTICLES GRID -->
+    <section class="home-section-wrap">
+      <div class="review-section-header">
+        <div class="section-title-wrap">
+          <span class="section-title-indicator"></span>
+          <h2 class="section-heading">সর্বশেষ কেনাকাটার গাইড ও ব্লগ</h2>
+        </div>
+        <a href="/blog" class="section-link-more">
+          <span>সকল ব্লগ দেখুন</span>
+          <span>&raquo;</span>
+        </a>
+      </div>
+
+      <div class="affiliate-grid-4">
+        <% if (latestPosts && latestPosts.length) { %>
+          <% latestPosts.slice(0, 8).forEach(post => { %>
+            <%- include('partials/post_card', { post: post }) %>
+          <% }) %>
+        <% } else { %>
+          <p style="text-align: center; color: var(--text-muted); grid-column: 1 / -1; padding: 30px;">কোনো পোস্ট পাওয়া যায়নি।</p>
+        <% } %>
+      </div>
+    </section>
+
+    <!-- 4. HERO MAGAZINE BENTO SHOWCASE: Editor's Choice -->
     <% if (featuredPosts && featuredPosts.length) { %>
       <section class="home-section-wrap">
         <div class="review-section-header">
@@ -124,9 +148,9 @@
             </div>
           </div>
 
-          <!-- RIGHT: Top 2, 3, 4 Ranked Review Cards -->
+          <!-- RIGHT: Top Ranked Review Cards (Rank #2 to #5) -->
           <div class="hero-side-list">
-            <% featuredPosts.slice(1, 4).forEach((post, idx) => { %>
+            <% featuredPosts.slice(1, 5).forEach((post, idx) => { %>
               <div class="hero-side-card">
                 <a href="/post/<%= encodeURIComponent(post.slug || '') %>" class="hero-side-thumb">
                   <% if (post.featured_image) { %>
@@ -170,7 +194,7 @@
       </section>
     <% } %>
 
-    <!-- 4. CATEGORIES HUB -->
+    <!-- 5. CATEGORIES HUB -->
     <% if (topCategories && topCategories.length) { %>
       <section class="affiliate-categories-hub">
         <div class="category-hub-header">
@@ -361,26 +385,6 @@
         </div>
       </section>
     <% } %>
-
-    <!-- 11. LATEST BUYING GUIDES & ARTICLES GRID -->
-    <section class="home-section-wrap">
-      <div class="review-section-header">
-        <div class="section-title-wrap">
-          <span class="section-title-indicator"></span>
-          <h2 class="section-heading">সর্বশেষ কেনাকাটার গাইড ও রিভিউ</h2>
-        </div>
-      </div>
-
-      <div class="affiliate-grid-4">
-        <% if (latestPosts && latestPosts.length) { %>
-          <% latestPosts.forEach(post => { %>
-            <%- include('partials/post_card', { post: post }) %>
-          <% }) %>
-        <% } else { %>
-          <p style="text-align: center; color: var(--text-muted); grid-column: 1 / -1; padding: 30px;">কোনো পোস্ট পাওয়া যায়নি।</p>
-        <% } %>
-      </div>
-    </section>
 
   </div>
 </main>

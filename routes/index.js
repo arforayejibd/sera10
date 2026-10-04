@@ -18,6 +18,9 @@ router.get('/', homeController.getHomePage);
 // Legacy author redirects
 router.get(['/author-deshboard', '/author-dashboard', '/author/:slug', '/authors'], (req, res) => res.redirect('/admin'));
 
+// All Blog Posts & Guides Archive
+router.get(['/blog', '/all-posts', '/posts', '/articles'], postController.getAllPostsPage);
+
 // Books List & Single Book
 router.get('/books', bookController.getBooksList);
 router.get('/book/:slug', bookController.getSingleBook);

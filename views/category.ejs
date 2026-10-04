@@ -87,7 +87,7 @@
           <% subcategories.forEach(sub => { 
                const isActive = activeSubSlug && (activeSubSlug === sub.slug || decodeURIComponent(activeSubSlug) === sub.slug);
           %>
-            <a href="/category/<%= encodeURIComponent(currentParent.slug) %>/<%= encodeURIComponent(sub.slug) %>" class="archive-nav-pill <%= isActive ? 'active' : '' %>">
+            <a href="<%= sub.url ? sub.url : ('/category/' + encodeURIComponent(currentParent.slug) + '/' + encodeURIComponent(sub.slug)) %>" class="archive-nav-pill <%= isActive ? 'active' : '' %>">
               <span><%= sub.name %></span>
               <% if (sub.count) { %>
                 <span class="pill-badge-count"><%= toBengaliNumber(sub.count) %></span>
