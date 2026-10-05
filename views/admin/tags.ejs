@@ -126,12 +126,20 @@
 <!-- 2. High-Density Tag Cloud / Modern Tag Chips Container -->
 <div class="admin-card" style="padding: 22px 24px; min-height: 380px;">
   
-  <!-- In-page Fast Filter Indicator -->
+  <!-- In-page Fast Filter & Bulk Select Indicator -->
   <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; gap: 10px;">
-    <div style="font-size: 13.5px; color: #64748b;">
-      Showing: <strong><%= startItem %> - <%= endItem %></strong> (of <%= totalItems.toLocaleString() %> tags)
-      <span style="margin: 0 8px; color: #cbd5e1;">|</span>
-      <span style="color: #075603; font-weight: 600;">Click tag name to visit frontend archive ↗</span>
+    <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+      <!-- Master Select All Checkbox -->
+      <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 600; color: #1e293b; cursor: pointer; user-select: none; background: #f8fafc; padding: 4px 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+        <input type="checkbox" id="masterSelectAllTags" onchange="toggleSelectAllTags(this)" style="accent-color: #075603; width: 16px; height: 16px; cursor: pointer; margin: 0;">
+        <span>সব সিলেক্ট করুন</span>
+      </label>
+
+      <div style="font-size: 13.5px; color: #64748b;">
+        Showing: <strong><%= startItem %> - <%= endItem %></strong> (of <%= totalItems.toLocaleString() %> tags)
+        <span style="margin: 0 8px; color: #cbd5e1;">|</span>
+        <span style="color: #075603; font-weight: 600;">Click tag name to visit frontend archive ↗</span>
+      </div>
     </div>
 
     <!-- Client-side Fast In-Page Search -->
@@ -147,6 +155,26 @@
     </div>
   </div>
 
+  <!-- Bulk Action Bar (Visible when 1+ tags selected) -->
+  <div id="tagBulkActionBar" style="display: none; align-items: center; justify-content: space-between; background: #eaf5e9; border: 1px solid #c2e2be; border-radius: 8px; padding: 10px 16px; margin-bottom: 16px; animation: fadeInModal 0.2s ease; flex-wrap: wrap; gap: 10px;">
+    <div style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: #075603; font-weight: 600;">
+      <span style="display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: #075603; color: #fff; font-size: 12px; font-weight: 700;" id="tagSelectedBadge">0</span>
+      <span><strong id="tagSelectedCount">0</strong>টি ট্যাগ নির্বাচিত হয়েছে</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button type="button" onclick="clearAllTagSelections()" style="padding: 6px 12px; font-size: 13px; font-weight: 600; color: #475569; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; transition: all 0.15s ease;">বাতিল করুন</button>
+      <button type="button" onclick="submitBulkDeleteTags()" style="padding: 6px 14px; font-size: 13px; font-weight: 700; color: #ffffff; background: #dc2626; border: none; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2); transition: all 0.15s ease;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+        <span>নির্বাচিত ট্যাগগুলো মুছুন</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Hidden Bulk Delete Form -->
+  <form id="bulkDeleteTagsForm" action="/admin/tags/bulk-delete" method="POST" style="display: none;">
+    <input type="hidden" name="tag_ids" id="bulkDeleteTagIds">
+  </form>
+
   <% if (tags && tags.length) { %>
     <div class="tag-chips-grid" id="tagChipsGrid">
       <% tags.forEach(t => { 
@@ -159,6 +187,11 @@
           data-name="<%= (t.name || '').toLowerCase() %>" 
           data-slug="<%= (t.slug || '').toLowerCase() %>"
         >
+          <!-- Bulk Checkbox -->
+          <label class="tag-chip-cb-label" onclick="event.stopPropagation();" title="সিলেক্ট করুন">
+            <input type="checkbox" class="tag-select-cb" value="<%= t.id %>" data-name="<%= t.name %>" onchange="onTagCheckboxChange(this)">
+          </label>
+
           <!-- Direct Link to Tag Frontend Archive -->
           <a 
             href="<%= tagUrl %>" 
@@ -410,6 +443,30 @@
     border-color: #075603;
     box-shadow: 0 4px 12px rgba(7, 86, 3, 0.08);
     transform: translateY(-1px);
+  }
+
+  .tag-chip-card.is-selected {
+    background: #eaf5e9 !important;
+    border-color: #075603 !important;
+    box-shadow: 0 0 0 1px #075603, 0 4px 12px rgba(7, 86, 3, 0.12) !important;
+  }
+
+  .tag-chip-cb-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 9px;
+    padding-right: 3px;
+    cursor: pointer;
+    margin: 0;
+  }
+
+  .tag-chip-cb-label input[type="checkbox"] {
+    accent-color: #075603;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    margin: 0;
   }
 
   /* Main Link spanning the chip */
@@ -688,6 +745,105 @@
 </style>
 
 <script>
+  // Bulk Selection State Management
+  function getSelectedTagCheckboxes() {
+    return Array.from(document.querySelectorAll('.tag-select-cb:checked'));
+  }
+
+  function onTagCheckboxChange(cb) {
+    const card = cb.closest('.tag-chip-card');
+    if (card) {
+      if (cb.checked) {
+        card.classList.add('is-selected');
+      } else {
+        card.classList.remove('is-selected');
+      }
+    }
+    updateBulkSelectState();
+  }
+
+  function toggleSelectAllTags(masterCb) {
+    const isChecked = masterCb.checked;
+    const visibleCards = Array.from(document.querySelectorAll('.tag-chip-card')).filter(c => c.style.display !== 'none');
+    visibleCards.forEach(card => {
+      const cb = card.querySelector('.tag-select-cb');
+      if (cb) {
+        cb.checked = isChecked;
+        if (isChecked) {
+          card.classList.add('is-selected');
+        } else {
+          card.classList.remove('is-selected');
+        }
+      }
+    });
+    updateBulkSelectState();
+  }
+
+  function updateBulkSelectState() {
+    const selectedCbs = getSelectedTagCheckboxes();
+    const count = selectedCbs.length;
+    const bar = document.getElementById('tagBulkActionBar');
+    const countText = document.getElementById('tagSelectedCount');
+    const badge = document.getElementById('tagSelectedBadge');
+    const masterCb = document.getElementById('masterSelectAllTags');
+
+    if (countText) countText.textContent = count;
+    if (badge) badge.textContent = count;
+
+    if (count > 0) {
+      if (bar) bar.style.display = 'flex';
+    } else {
+      if (bar) bar.style.display = 'none';
+    }
+
+    const visibleCards = Array.from(document.querySelectorAll('.tag-chip-card')).filter(c => c.style.display !== 'none');
+    if (masterCb && visibleCards.length > 0) {
+      const visibleSelected = visibleCards.filter(c => {
+        const cb = c.querySelector('.tag-select-cb');
+        return cb && cb.checked;
+      });
+      masterCb.checked = (visibleSelected.length === visibleCards.length && visibleCards.length > 0);
+      masterCb.indeterminate = (visibleSelected.length > 0 && visibleSelected.length < visibleCards.length);
+    } else if (masterCb) {
+      masterCb.checked = false;
+      masterCb.indeterminate = false;
+    }
+  }
+
+  function clearAllTagSelections() {
+    document.querySelectorAll('.tag-select-cb').forEach(cb => {
+      cb.checked = false;
+      const card = cb.closest('.tag-chip-card');
+      if (card) card.classList.remove('is-selected');
+    });
+    const masterCb = document.getElementById('masterSelectAllTags');
+    if (masterCb) {
+      masterCb.checked = false;
+      masterCb.indeterminate = false;
+    }
+    updateBulkSelectState();
+  }
+
+  function submitBulkDeleteTags() {
+    const selectedCbs = getSelectedTagCheckboxes();
+    if (!selectedCbs.length) return;
+
+    const ids = selectedCbs.map(cb => cb.value);
+    const count = ids.length;
+
+    const msg = `আপনি কি নিশ্চিত যে নির্বাচিত ${count}টি ট্যাগ মুছে ফেলতে চান?\nট্যাগগুলো মুছে ফেললে পোস্টগুলো থেকে ট্যাগের সংযোগও মুছে যাবে।`;
+    if (!confirm(msg)) {
+      return;
+    }
+
+    const form = document.getElementById('bulkDeleteTagsForm');
+    const input = document.getElementById('bulkDeleteTagIds');
+    if (form && input) {
+      input.value = JSON.stringify(ids);
+      form.submit();
+    }
+  }
+
   // Fast In-Page Filter for visible tags
   function filterTagsOnCurrentPage(term) {
     const q = (term || '').trim().toLowerCase();
@@ -704,6 +860,8 @@
         card.style.display = 'none';
       }
     });
+
+    updateBulkSelectState();
   }
 
   // Add Tag Modal Controls

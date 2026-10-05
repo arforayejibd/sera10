@@ -1321,6 +1321,38 @@ exports.deleteTag = async (req, res) => {
   res.redirect(req.headers.referer || '/admin/tags');
 };
 
+exports.postBulkDeleteTags = async (req, res) => {
+  try {
+    let ids = req.body.tag_ids || req.body.ids;
+    if (typeof ids === 'string') {
+      try {
+        const parsed = JSON.parse(ids);
+        if (Array.isArray(parsed)) ids = parsed;
+        else ids = ids.split(',');
+      } catch (e) {
+        ids = ids.split(',');
+      }
+    }
+    if (Array.isArray(ids)) {
+      const validIds = ids.map(id => parseInt(id, 10)).filter(id => !isNaN(id) && id > 0);
+      if (validIds.length > 0) {
+        const placeholders = validIds.map(() => '?').join(',');
+        await db.prepare(`DELETE FROM post_tags WHERE tag_id IN (${placeholders})`).run(...validIds);
+        await db.prepare(`DELETE FROM tags WHERE id IN (${placeholders})`).run(...validIds);
+      }
+    }
+    if (req.xhr || (req.headers.accept && req.headers.accept.includes('json'))) {
+      return res.json({ success: true, count: ids ? ids.length : 0 });
+    }
+  } catch (err) {
+    console.error('Error in postBulkDeleteTags:', err);
+    if (req.xhr || (req.headers.accept && req.headers.accept.includes('json'))) {
+      return res.status(500).json({ error: 'Failed to delete tags' });
+    }
+  }
+  res.redirect(req.headers.referer || '/admin/tags');
+};
+
 // ==========================================
 // 7. MEDIA LIBRARY
 // ==========================================

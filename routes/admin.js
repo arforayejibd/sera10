@@ -48,6 +48,7 @@ router.post('/categories/:id/delete', adminController.deleteCategory);
 
 router.get('/tags', adminController.getTags);
 router.post('/tags/add', adminController.postAddTag);
+router.post('/tags/bulk-delete', adminController.postBulkDeleteTags);
 router.post('/tags/:id/edit', adminController.postEditTag);
 router.post('/tags/:id/delete', adminController.deleteTag);
 router.post('/api/suggest-tags', adminController.apiSuggestTags);
