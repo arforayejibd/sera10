@@ -1,0 +1,357 @@
+/* ==========================================================================
+   WP-STYLE FRONTEND ADMIN TOPBAR
+   Brand & Theme: Dark Forest (#0d1512), Emerald Green Accent (#075603 / #10b981)
+   ========================================================================== */
+
+/* Body Offset for Topbar */
+body.has-admin-topbar {
+  padding-top: 38px !important;
+}
+
+body.has-admin-topbar .site-header {
+  top: 38px !important;
+}
+
+@media (max-width: 782px) {
+  body.has-admin-topbar {
+    padding-top: 44px !important;
+  }
+  body.has-admin-topbar .site-header {
+    top: 44px !important;
+  }
+}
+
+/* Admin Topbar Container */
+#wp-admin-bar-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 38px;
+  background-color: #0d1512;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+  font-family: 'Kalpurush', 'payasti_uni', 'Hind Siliguri', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Flex Groups */
+.wp-topbar-group-left,
+.wp-topbar-group-right {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.wp-topbar-group-left {
+  gap: 2px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.wp-topbar-group-left::-webkit-scrollbar {
+  display: none;
+}
+
+.wp-topbar-group-right {
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* Topbar Items / Nodes */
+.wp-topbar-item {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.wp-topbar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  padding: 0 10px;
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.15s ease-in-out;
+  border-radius: 4px;
+}
+
+.wp-topbar-link svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  stroke: currentColor;
+  stroke-width: 2;
+  transition: transform 0.15s ease;
+}
+
+.wp-topbar-item:hover > .wp-topbar-link,
+.wp-topbar-link:hover,
+.wp-topbar-item.active > .wp-topbar-link {
+  background-color: #16241f;
+  color: #4ade80;
+}
+
+/* Brand Node */
+.wp-topbar-brand .wp-topbar-link {
+  font-weight: 700;
+  color: #ffffff;
+  padding-left: 4px;
+}
+.wp-topbar-brand-badge {
+  background: #075603;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+  letter-spacing: -0.2px;
+}
+
+/* Notification Bubbles / Count Badges */
+.wp-topbar-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #075603;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  padding: 0 5px;
+  line-height: 1;
+}
+
+.wp-topbar-count.has-pending {
+  background-color: #dc2626;
+  color: #ffffff;
+  animation: topbarPulse 2s infinite;
+}
+
+@keyframes topbarPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Status Chip */
+.wp-topbar-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: rgba(234, 245, 233, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.wp-topbar-chip.chip-edit {
+  background: #075603;
+  color: #ffffff;
+  border-color: #053b02;
+}
+.wp-topbar-chip.chip-edit:hover {
+  background: #053b02;
+}
+
+/* Dropdown Menus */
+.wp-topbar-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 210px;
+  background-color: #0d1512;
+  border: 1px solid #1e2d27;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.6);
+  padding: 6px 0;
+  display: none;
+  flex-direction: column;
+  z-index: 1000000;
+}
+
+.wp-topbar-dropdown-right {
+  left: auto;
+  right: 0;
+  min-width: 240px;
+}
+
+/* Open dropdown on hover */
+.wp-topbar-item:hover > .wp-topbar-dropdown {
+  display: flex;
+  animation: topbarFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes topbarFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.wp-topbar-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 14px;
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.12s ease;
+}
+
+.wp-topbar-dropdown-item .item-main {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.wp-topbar-dropdown-item svg {
+  width: 14px;
+  height: 14px;
+  color: #94a3b8;
+  stroke: currentColor;
+  stroke-width: 2;
+  flex-shrink: 0;
+}
+
+.wp-topbar-dropdown-item:hover {
+  background-color: #16241f;
+  color: #4ade80;
+  padding-left: 17px;
+}
+.wp-topbar-dropdown-item:hover svg {
+  color: #4ade80;
+}
+
+.wp-topbar-dropdown-divider {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.08);
+  margin: 4px 0;
+}
+
+/* User Card in Dropdown */
+.wp-topbar-user-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.wp-topbar-user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid #10b981;
+  background: #16241f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.wp-topbar-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.wp-topbar-user-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wp-topbar-user-role {
+  display: inline-block;
+  font-size: 11px;
+  color: #10b981;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* Avatar small on bar */
+.wp-topbar-avatar-small {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #10b981;
+  background: #16241f;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* Logout link special color */
+.wp-topbar-dropdown-item.item-logout:hover {
+  color: #f87171;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+.wp-topbar-dropdown-item.item-logout:hover svg {
+  color: #f87171;
+}
+
+/* Responsive Mobile Rules */
+@media (max-width: 782px) {
+  #wp-admin-bar-root {
+    height: 44px;
+    padding: 0 10px;
+  }
+  
+  .wp-topbar-link {
+    padding: 0 8px;
+    font-size: 12.5px;
+  }
+  
+  .wp-topbar-hide-mobile {
+    display: none !important;
+  }
+
+  .wp-topbar-dropdown {
+    position: fixed;
+    top: 44px;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    border-radius: 0;
+  }
+}

@@ -258,9 +258,12 @@ exports.postNewPost = async (req, res) => {
   try {
     const { title, author_id, excerpt, content, status, is_featured } = req.body;
     const categories = await db.prepare('SELECT id, name, parent_id FROM categories ORDER BY name ASC').all();
-    const authors = await db.prepare('SELECT id, display_name, username, role FROM users ORDER BY display_name ASC').all();
+    const isAjax = req.xhr || req.headers.accept?.includes('json') || req.body?.ajax === '1' || req.headers['x-requested-with'] === 'XMLHttpRequest';
 
     if (!title || !title.trim()) {
+      if (isAjax) {
+        return res.status(400).json({ success: false, error: 'অনুগ্রহ করে পোস্টের শিরোনাম প্রদান করুন।' });
+      }
       return res.render('admin/post_new', {
         user: req.user,
         categories,
@@ -393,9 +396,29 @@ exports.postNewPost = async (req, res) => {
       await syncPostTags(newPostId, req.body.tags);
     }
 
+    // Return JSON for AJAX requests (e.g. Post Published popup)
+    if (req.xhr || req.headers.accept?.includes('json') || req.body.ajax === '1' || req.headers['x-requested-with'] === 'XMLHttpRequest') {
+      return res.json({
+        success: true,
+        postId: newPostId,
+        title: title.trim(),
+        slug: slug,
+        url: `/post/${slug}`,
+        editUrl: `/admin/posts/${newPostId}/edit`,
+        status: postStatus,
+        message: postStatus === 'publish' ? 'Post Published' : (postStatus === 'draft' ? 'Draft Saved' : 'Submitted for Review')
+      });
+    }
+
     res.redirect('/admin/posts');
   } catch (err) {
     console.error('Error in postNewPost:', err);
+    if (req.xhr || req.headers.accept?.includes('json') || req.body?.ajax === '1' || req.headers['x-requested-with'] === 'XMLHttpRequest') {
+      return res.status(500).json({
+        success: false,
+        error: 'পোস্ট সংরক্ষণ করতে সমস্যা হয়েছে: ' + (err.message || 'অজানা ত্রুটি')
+      });
+    }
     try {
       const categories = await db.prepare('SELECT id, name FROM categories ORDER BY name ASC').all();
       const authors = await db.prepare('SELECT id, display_name, username, role FROM users ORDER BY display_name ASC').all();
@@ -619,9 +642,28 @@ exports.postEditPost = async (req, res) => {
       await syncPostTags(id, req.body.tags);
     }
 
+    if (req.xhr || req.headers.accept?.includes('json') || req.body.ajax === '1' || req.headers['x-requested-with'] === 'XMLHttpRequest') {
+      return res.json({
+        success: true,
+        postId: id,
+        title: postTitle,
+        slug: updatedSlug,
+        url: `/post/${updatedSlug}`,
+        editUrl: `/admin/posts/${id}/edit`,
+        status: postStatus,
+        message: postStatus === 'publish' ? 'Post Published' : 'Post Updated'
+      });
+    }
+
     res.redirect('/admin/posts');
   } catch (err) {
     console.error('Error in postEditPost:', err);
+    if (req.xhr || req.headers.accept?.includes('json') || req.body?.ajax === '1' || req.headers['x-requested-with'] === 'XMLHttpRequest') {
+      return res.status(500).json({
+        success: false,
+        error: 'পোস্ট আপডেট করতে সমস্যা হয়েছে: ' + (err.message || 'অজানা ত্রুটি')
+      });
+    }
     res.redirect('/admin/posts');
   }
 };

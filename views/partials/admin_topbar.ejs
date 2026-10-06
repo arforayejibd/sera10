@@ -1,0 +1,240 @@
+<% if (typeof user !== 'undefined' && user) { %>
+  <!-- WordPress-Style Frontend Admin Topbar -->
+  <div id="wp-admin-bar-root" role="navigation" aria-label="এডমিন বার">
+    <!-- Left Section -->
+    <div class="wp-topbar-group-left">
+      <!-- 1. Site Brand & Quick Dashboard Dropdown -->
+      <div class="wp-topbar-item wp-topbar-brand">
+        <a href="/admin" class="wp-topbar-link" title="ড্যাশবোর্ডে যান">
+          <span class="wp-topbar-brand-badge">১০</span>
+          <span><%= (typeof SITE_NAME !== 'undefined' && SITE_NAME) ? SITE_NAME : 'সেরা ১০' %></span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </a>
+        <div class="wp-topbar-dropdown">
+          <a href="/admin" class="wp-topbar-dropdown-item">
+            <span class="item-main">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              <span>ড্যাশবোর্ড</span>
+            </span>
+          </a>
+          <a href="/admin/posts" class="wp-topbar-dropdown-item">
+            <span class="item-main">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              <span>সকল পোস্ট</span>
+            </span>
+          </a>
+          <a href="/admin/categories" class="wp-topbar-dropdown-item">
+            <span class="item-main">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+              <span>ক্যাটাগরিসমূহ</span>
+            </span>
+          </a>
+          <a href="/admin/tags" class="wp-topbar-dropdown-item">
+            <span class="item-main">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+              <span>ট্যাগসমূহ</span>
+            </span>
+          </a>
+          <a href="/admin/media" class="wp-topbar-dropdown-item">
+            <span class="item-main">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              <span>মিডিয়া লাইব্রেরি</span>
+            </span>
+          </a>
+          <a href="/admin/comments" class="wp-topbar-dropdown-item">
+            <span class="item-main">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+              <span>মন্তব্যসমূহ</span>
+            </span>
+          </a>
+          <% if (user.role === 'admin') { %>
+            <div class="wp-topbar-dropdown-divider"></div>
+            <a href="/admin/menu" class="wp-topbar-dropdown-item">
+              <span class="item-main">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                <span>মেনু নেভিগেশন</span>
+              </span>
+            </a>
+            <a href="/admin/settings" class="wp-topbar-dropdown-item">
+              <span class="item-main">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span>সাইট সেটিংস</span>
+              </span>
+            </a>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- 2. + New Dropdown -->
+      <div class="wp-topbar-item">
+        <a href="/admin/posts/new" class="wp-topbar-link" title="নতুন কিছু তৈরি করুন">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span>নতুন</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </a>
+        <div class="wp-topbar-dropdown">
+          <a href="/admin/posts/new" class="wp-topbar-dropdown-item">
+            <span class="item-main">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+              <span>পোস্ট</span>
+            </span>
+          </a>
+          <a href="/admin/categories" class="wp-topbar-dropdown-item">
+            <span class="item-main">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+              <span>ক্যাটাগরি</span>
+            </span>
+          </a>
+          <a href="/admin/media" class="wp-topbar-dropdown-item">
+            <span class="item-main">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              <span>মিডিয়া</span>
+            </span>
+          </a>
+          <a href="/admin/books" class="wp-topbar-dropdown-item">
+            <span class="item-main">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+              <span>বই</span>
+            </span>
+          </a>
+          <% if (user.role === 'admin') { %>
+            <div class="wp-topbar-dropdown-divider"></div>
+            <a href="/admin/users/new" class="wp-topbar-dropdown-item">
+              <span class="item-main">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+                <span>ব্যবহারকারী</span>
+              </span>
+            </a>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- 3. Contextual Actions: Single Post Edit Action -->
+      <% if (typeof post !== 'undefined' && post && post.id) { %>
+        <div class="wp-topbar-item">
+          <a href="/admin/posts/<%= post.id %>/edit" class="wp-topbar-link" style="color: #4ade80; font-weight: 700;" title="বর্তমান পোস্টটি এডিট করুন">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            <span>পোস্ট এডিট করুন</span>
+            <% if (post.status && post.status !== 'publish') { %>
+              <span class="wp-topbar-chip"><%= post.status === 'draft' ? 'ড্রাফট' : 'পেন্ডিং' %></span>
+            <% } %>
+          </a>
+        </div>
+      <% } else if (typeof category !== 'undefined' && category && category.id > 0) { %>
+        <!-- Contextual Action: Category Manage Action -->
+        <div class="wp-topbar-item">
+          <a href="/admin/categories" class="wp-topbar-link" style="color: #4ade80; font-weight: 700;" title="ক্যাটাগরি ম্যানেজ করুন">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+            <span>ক্যাটাগরি ম্যানেজ করুন</span>
+          </a>
+        </div>
+      <% } %>
+
+      <!-- 4. Notifications & Counts -->
+      <% if (typeof adminCommentsCount !== 'undefined' && adminCommentsCount > 0) { %>
+        <div class="wp-topbar-item wp-topbar-hide-mobile">
+          <a href="/admin/comments" class="wp-topbar-link" title="পেন্ডিং মন্তব্য">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+            <span class="wp-topbar-count"><%= (typeof toBengaliNumber === 'function') ? toBengaliNumber(adminCommentsCount) : adminCommentsCount %></span>
+          </a>
+        </div>
+      <% } %>
+
+      <% if (typeof adminPendingCount !== 'undefined' && adminPendingCount > 0) { %>
+        <div class="wp-topbar-item wp-topbar-hide-mobile">
+          <a href="/admin/pending" class="wp-topbar-link" title="অনুমোদনের অপেক্ষায় থাকা পোস্ট">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>পেন্ডিং</span>
+            <span class="wp-topbar-count has-pending"><%= (typeof toBengaliNumber === 'function') ? toBengaliNumber(adminPendingCount) : adminPendingCount %></span>
+          </a>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Right Section -->
+    <div class="wp-topbar-group-right">
+      <!-- Quick Dashboard Direct Link -->
+      <div class="wp-topbar-item wp-topbar-hide-mobile">
+        <a href="/admin" class="wp-topbar-link" title="এডমিন প্যানেলে প্রবেশ করুন">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          <span>ড্যাশবোর্ড</span>
+        </a>
+      </div>
+
+      <!-- User Account & Profile Dropdown -->
+      <div class="wp-topbar-item">
+        <a href="/admin/users/<%= user.id %>/edit" class="wp-topbar-link" title="ব্যবহারকারী অ্যাকাউন্ট">
+          <span>স্বাগতম, <strong><%= user.display_name || user.username %></strong></span>
+          <% if (user.avatar) { %>
+            <img src="<%= user.avatar %>" alt="<%= user.display_name || user.username %>" class="wp-topbar-avatar-small">
+          <% } else { %>
+            <span class="wp-topbar-avatar-small">
+              <%= (user.display_name || user.username || 'U').charAt(0).toUpperCase() %>
+            </span>
+          <% } %>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </a>
+
+        <div class="wp-topbar-dropdown wp-topbar-dropdown-right">
+          <!-- User Mini Header -->
+          <div class="wp-topbar-user-header">
+            <% if (user.avatar) { %>
+              <img src="<%= user.avatar %>" alt="<%= user.display_name || user.username %>" class="wp-topbar-user-avatar">
+            <% } else { %>
+              <div class="wp-topbar-user-avatar">
+                <%= (user.display_name || user.username || 'U').charAt(0).toUpperCase() %>
+              </div>
+            <% } %>
+            <div class="wp-topbar-user-info">
+              <span class="wp-topbar-user-name"><%= user.display_name || user.username %></span>
+              <span class="wp-topbar-user-role">
+                <% if (user.role === 'admin') { %>
+                  অ্যাডমিনিস্ট্রেটর
+                <% } else if (user.role === 'editor') { %>
+                  সম্পাদক
+                <% } else if (user.role === 'author') { %>
+                  লেখক
+                <% } else { %>
+                  <%= user.role %>
+                <% } %>
+              </span>
+            </div>
+          </div>
+
+          <!-- User Menu Links -->
+          <a href="/admin/users/<%= user.id %>/edit" class="wp-topbar-dropdown-item">
+            <span class="item-main">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <span>প্রোফাইল এডিট করুন</span>
+            </span>
+          </a>
+
+          <a href="/admin" class="wp-topbar-dropdown-item">
+            <span class="item-main">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              <span>এডমিন ড্যাশবোর্ড</span>
+            </span>
+          </a>
+
+          <% if (user.role === 'admin') { %>
+            <a href="/admin/settings" class="wp-topbar-dropdown-item">
+              <span class="item-main">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span>সেটিংস</span>
+              </span>
+            </a>
+          <% } %>
+
+          <div class="wp-topbar-dropdown-divider"></div>
+
+          <a href="/logout" class="wp-topbar-dropdown-item item-logout">
+            <span class="item-main">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+              <span>লগআউট</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+<% } %>

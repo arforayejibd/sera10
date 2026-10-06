@@ -627,12 +627,14 @@
       window.setupWordPressSmartPaste('postTitleInput', 'postContentInput');
     }
 
-    // Form Submission & Content Sync
+    // Form Submission & Content Sync via AJAX with Post Updated / Published Popup
     const form = document.getElementById('postEditForm');
     const submitBtn = document.getElementById('btnUpdatePost');
     const draftBtn = document.getElementById('btnSaveDraftEdit');
     
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
       const title = document.getElementById('postTitleInput').value.trim();
       if (!title) {
         if (window.showToast) {
@@ -641,7 +643,6 @@
           alert('Please enter a post title.');
         }
         document.getElementById('postTitleInput').focus();
-        e.preventDefault();
         return false;
       }
 
@@ -650,13 +651,171 @@
         if (textarea && !textarea.value) textarea.value = '<p>' + title + '</p>';
       }
 
+      const isDraft = document.getElementById('statusSelect').value === 'draft';
+      const origSubmitHtml = submitBtn ? submitBtn.innerHTML : '';
+      const origDraftHtml = draftBtn ? draftBtn.innerHTML : '';
+
       if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span>Updating... ⏳</span>';
       }
       if (draftBtn) draftBtn.disabled = true;
+
+      try {
+        const formData = new FormData(form);
+        formData.append('ajax', '1');
+
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Accept': 'application/json, text/plain, */*',
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        });
+
+        const contentType = response.headers.get('content-type') || '';
+        let result = null;
+
+        if (contentType.includes('application/json')) {
+          result = await response.json();
+        } else {
+          const text = await response.text();
+          if (response.ok) {
+            const currentSlug = document.getElementById('postSlugInput')?.value || '';
+            result = {
+              success: true,
+              title: title,
+              slug: currentSlug,
+              url: currentSlug ? '/post/' + currentSlug : '/',
+              editUrl: window.location.pathname,
+              status: isDraft ? 'draft' : 'publish',
+              message: 'Post Published'
+            };
+          } else {
+            throw new Error('সার্ভার থেকে ত্রুটিপূর্ণ প্রতিক্রিয়া এসেছে (' + response.status + ')');
+          }
+        }
+
+        if (result && result.success) {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = origSubmitHtml;
+          }
+          if (draftBtn) {
+            draftBtn.disabled = false;
+            draftBtn.innerHTML = origDraftHtml;
+          }
+
+          if (result.slug) {
+            const slugInput = document.getElementById('postSlugInput');
+            const permalinkUrl = document.getElementById('wpPermalinkUrl');
+            if (slugInput) slugInput.value = result.slug;
+            if (permalinkUrl) permalinkUrl.textContent = result.slug;
+          }
+
+          // Open the WordPress Floating Popup Notification!
+          window.showPopupNotification(result);
+
+        } else {
+          throw new Error((result && result.error) ? result.error : 'পোস্ট আপডেট করা যায়নি');
+        }
+      } catch (err) {
+        console.error('Post update error:', err);
+        if (window.showToast) {
+          window.showToast('⚠️ ত্রুটি: ' + err.message, 'error');
+        } else {
+          alert('ত্রুটি: ' + err.message);
+        }
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = origSubmitHtml;
+        }
+        if (draftBtn) {
+          draftBtn.disabled = false;
+          draftBtn.innerHTML = origDraftHtml;
+        }
+      }
     });
   });
+
+  // Floating Popup Notification Helpers
+  let popupTimeout = null;
+  let currentPublishedUrl = '';
+
+  window.showPopupNotification = function(data) {
+    const popup = document.getElementById('wpPopupNotification');
+    if (!popup) return;
+
+    const messageEl = document.getElementById('wpPopupMessage');
+    const viewLink = document.getElementById('wpPopupViewLink');
+    const postUrl = window.location.origin + data.url;
+    currentPublishedUrl = postUrl;
+
+    if (viewLink) viewLink.href = data.url;
+
+    if (data.status === 'draft') {
+      if (messageEl) messageEl.textContent = 'Draft saved.';
+    } else if (data.status === 'pending') {
+      if (messageEl) messageEl.textContent = 'Submitted for review.';
+    } else {
+      if (messageEl) messageEl.textContent = 'Post updated.';
+    }
+
+    popup.style.display = 'flex';
+
+    if (popupTimeout) clearTimeout(popupTimeout);
+    popupTimeout = setTimeout(function() {
+      window.hidePopupNotification();
+    }, 10000);
+  };
+
+  window.hidePopupNotification = function() {
+    const popup = document.getElementById('wpPopupNotification');
+    if (popup) popup.style.display = 'none';
+  };
+
+  window.copyPublishedPostLink = function() {
+    if (!currentPublishedUrl) return;
+    navigator.clipboard.writeText(currentPublishedUrl).then(function() {
+      const copyText = document.getElementById('wpPopupCopyText');
+      if (copyText) {
+        copyText.textContent = 'Copied! ✓';
+        setTimeout(function() {
+          copyText.textContent = 'Copy Link';
+        }, 2500);
+      }
+    }).catch(function() {
+      alert('Link: ' + currentPublishedUrl);
+    });
+  };
+
+  window.saveAsDraftEdit = function() {
+    const statusSelect = document.getElementById('statusSelect');
+    if (statusSelect) statusSelect.value = 'draft';
+    const form = document.getElementById('postEditForm');
+    if (form) {
+      if (form.requestSubmit) form.requestSubmit();
+      else form.submit();
+    }
+  };
 </script>
+
+<!-- WordPress-Style Floating Popup Notification -->
+<div id="wpPopupNotification" class="wp-popup-notification" style="display: none;">
+  <div class="wp-popup-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+  </div>
+  <span class="wp-popup-message" id="wpPopupMessage">Post updated.</span>
+  <div class="wp-popup-actions">
+    <a href="/post/<%= encodeURIComponent(post.slug) %>" id="wpPopupViewLink" target="_blank" class="wp-popup-btn wp-popup-btn-view">
+      View Post &nearr;
+    </a>
+    <button type="button" class="wp-popup-btn wp-popup-btn-copy" id="wpPopupCopyBtn" onclick="window.copyPublishedPostLink();">
+      <span id="wpPopupCopyText">Copy Link</span>
+    </button>
+    <button type="button" class="wp-popup-close-btn" onclick="window.hidePopupNotification();" aria-label="Dismiss">&times;</button>
+  </div>
+</div>
 
 <%- include('partials/admin_layout_end') %>

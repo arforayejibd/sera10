@@ -13,6 +13,7 @@ const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const apiRoutes = require('./routes/api');
 const { SITE_NAME, TAGLINE, NAV_MENU, EDITORIAL_BOARD, CONTACT, AFFILIATE_DISCLOSURE } = require('./config/constants');
+const db = require('./config/database');
 const { generateSeoMeta } = require('./middleware/seo');
 const { 
   toBengaliNumber, 
@@ -123,6 +124,22 @@ app.use(async (req, res, next) => {
   res.locals.renderArticleContent = renderArticleContent;
   res.locals.generateTableOfContents = generateTableOfContents;
   res.locals.calculateReadingTime = calculateReadingTime;
+
+  // Realtime notification counts for Admin Topbar
+  res.locals.adminPendingCount = 0;
+  res.locals.adminCommentsCount = 0;
+  if (res.locals.user && (res.locals.user.role === 'admin' || res.locals.user.role === 'editor')) {
+    try {
+      const pendRow = await db.prepare("SELECT COUNT(1) AS total FROM posts WHERE status = 'pending'").get();
+      const commRow = await db.prepare("SELECT COUNT(1) AS total FROM comments WHERE status = 'pending'").get();
+      res.locals.adminPendingCount = pendRow ? pendRow.total : 0;
+      res.locals.adminCommentsCount = commRow ? commRow.total : 0;
+    } catch (e) {
+      res.locals.adminPendingCount = 0;
+      res.locals.adminCommentsCount = 0;
+    }
+  }
+
   next();
 });
 

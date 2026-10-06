@@ -72,6 +72,9 @@
 
   <link rel="stylesheet" href="/css/tailwind.css">
   <link rel="stylesheet" href="/css/style.css?v=6.6">
+  <% if (typeof user !== 'undefined' && user) { %>
+    <link rel="stylesheet" href="/css/admin-topbar.css?v=1.0">
+  <% } %>
   <% if (typeof isDashboard !== 'undefined' && isDashboard) { %>
     <link rel="stylesheet" href="/css/dashboard.css">
   <% } %>
@@ -129,7 +132,11 @@
     });
   </script>
 </head>
-<body class="site-body">
+<body class="site-body <%= (typeof user !== 'undefined' && user) ? 'has-admin-topbar' : '' %>">
+
+<% if (typeof user !== 'undefined' && user) { %>
+  <%- include('admin_topbar') %>
+<% } %>
 
 <header class="site-header">
   <div class="site-container header-inner">
