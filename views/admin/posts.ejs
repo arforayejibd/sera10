@@ -156,6 +156,24 @@
               </td>
               <td>
                 <div class="actions-group" style="justify-content: flex-end;">
+                  <!-- Photocard Generator / Download Action -->
+                  <button type="button" 
+                          class="btn-table-action" 
+                          style="background: #eaf5e9; color: #075603; border: 1px solid #c7e6c5; font-weight: 600; gap: 4px;" 
+                          data-id="<%= p.id %>"
+                          data-title="<%= (p.title || '').replace(/"/g, '&quot;') %>"
+                          data-image="<%= (p.featured_image || '').replace(/"/g, '&quot;') %>"
+                          data-slug="<%= (p.slug || '').replace(/"/g, '&quot;') %>"
+                          onclick="handlePhotocardBtnClick(this)"
+                          title="সোশ্যাল ফটোকার্ড তৈরি ও ডাউনলোড করুন">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                      <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    ফটোকার্ড
+                  </button>
+
                   <!-- Live Preview Link -->
                   <a href="/post/<%= encodeURIComponent(p.slug) %>" target="_blank" class="btn-table-action" style="background: #f1f5f9; color: #334155;" title="View on site">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -224,4 +242,916 @@
   <% } %>
 </div>
 
+<!-- ==========================================
+     PHOTOCARD STUDIO MODAL
+     ========================================== -->
+<div id="photocardModal" class="photocard-modal-backdrop" style="display: none;">
+  <div class="photocard-modal-dialog">
+    <!-- Modal Header -->
+    <div class="photocard-modal-header">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; background: #eaf5e9; color: #075603;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+        </span>
+        <div>
+          <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0; line-height: 1.2;">ফটোকার্ড জেনারেটর (Social Photocard)</h3>
+          <p style="font-size: 13px; color: #64748b; margin: 2px 0 0 0;">সোশ্যাল মিডিয়ায় পোস্ট করার জন্য ১:১ সাইজের আকর্ষণীয় ফটোকার্ড</p>
+        </div>
+      </div>
+      <button type="button" class="photocard-modal-close" onclick="closePhotocardModal()">&times;</button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="photocard-modal-body">
+      <!-- Left Column: Canvas Preview -->
+      <div class="photocard-preview-pane">
+        <div class="photocard-canvas-wrapper">
+          <canvas id="photocardCanvas" width="1080" height="1080"></canvas>
+          <div id="photocardLoading" class="photocard-loading-spinner" style="display: none;">
+            <div class="spinner-ring"></div>
+            <span>ছবি প্রস্তুত হচ্ছে...</span>
+          </div>
+        </div>
+        <div class="photocard-canvas-meta">
+          <span>📐 রেজোলিউশন: <strong>১০৮০ &times; ১০৮০ পিক্সেল (১:১)</strong></span>
+          <span id="photocardStatusBadge" class="badge-status-ready">✓ প্রস্তুত</span>
+        </div>
+      </div>
+
+      <!-- Right Column: Settings & Controls -->
+      <div class="photocard-controls-pane">
+        <!-- Post Title Input -->
+        <div class="form-group-pc">
+          <label for="pcTitleInput">পোস্টের টাইটেল (শিরোনাম):</label>
+          <textarea id="pcTitleInput" rows="3" class="admin-form-input" placeholder="ফটোকার্ডের টাইটেল লিখুন..." style="width: 100%; resize: vertical; font-size: 15px; font-weight: 600; color: #0f172a; line-height: 1.4;"></textarea>
+          <small style="color: #64748b; font-size: 12px;">টাইটেল পরিবর্তন করলে লাইভ ফটোকার্ডে সাথে সাথে আপডেট হবে।</small>
+        </div>
+
+        <!-- Image Controls -->
+        <div class="form-group-pc">
+          <label>ফিচার ইমেজ:</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="pcImageUrlInput" class="admin-form-input" placeholder="ছবির URL..." style="flex: 1; font-size: 13.5px;">
+            <input type="file" id="pcCustomFileInput" accept="image/*" style="display: none;" onchange="handleCustomImageUpload(this)">
+            <button type="button" class="btn-view-site" onclick="document.getElementById('pcCustomFileInput').click()" style="padding: 8px 12px; font-size: 13.5px; white-space: nowrap;">
+              📁 আপলোড
+            </button>
+          </div>
+        </div>
+
+        <!-- Typography & Sizing -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group-pc">
+            <label for="pcFontSizeSelect">টাইটেল ফন্ট সাইজ:</label>
+            <select id="pcFontSizeSelect" class="admin-form-select" style="font-size: 14px;" onchange="renderPhotocard()">
+              <option value="auto">অটো (স্বয়ংক্রিয়)</option>
+              <option value="42">ছোট (৪২ পিক্সেল)</option>
+              <option value="48" selected>মাঝারি (৪৮ পিক্সেল)</option>
+              <option value="54">বড় (৫৪ পিক্সেল)</option>
+              <option value="60">অতিরিক্ত বড় (৬০ পিক্সেল)</option>
+            </select>
+          </div>
+
+          <div class="form-group-pc">
+            <label for="pcImageFitSelect">ছবির প্রদর্শন (Fit):</label>
+            <select id="pcImageFitSelect" class="admin-form-select" style="font-size: 14px;" onchange="renderPhotocard()">
+              <option value="cover" selected>কভার (সম্পূর্ণ ফিল)</option>
+              <option value="contain">কনটেইন (সম্পূর্ণ ছবি)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Footer Text -->
+        <div class="form-group-pc">
+          <label for="pcFooterInput">ফুটার টেক্সট:</label>
+          <input type="text" id="pcFooterInput" class="admin-form-input" value="ভিজিট করুন: www.sera10.com" style="width: 100%; font-size: 14px;">
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="photocard-action-buttons">
+          <button type="button" id="btnDownloadPhotocard" class="btn-pc-primary" onclick="downloadPhotocardImage()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            ডাউনলোড ফটোকার্ড (PNG)
+          </button>
+
+          <button type="button" id="btnCopyPhotocard" class="btn-pc-secondary" onclick="copyPhotocardToClipboard()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            ক্লিপবোর্ডে কপি করুন
+          </button>
+        </div>
+
+        <div id="pcToastMsg" class="pc-toast-message" style="display: none;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Photocard Modal Styles (strictly adhering to brand green #075603 & slate) */
+.photocard-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(13, 21, 18, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: pcFadeIn 0.2s ease-out;
+}
+
+@keyframes pcFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.photocard-modal-dialog {
+  background: #ffffff;
+  border-radius: 16px;
+  max-width: 960px;
+  width: 100%;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.photocard-modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+}
+
+.photocard-modal-close {
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  line-height: 1;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.photocard-modal-close:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.photocard-modal-body {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 460px 1fr;
+  gap: 24px;
+  overflow-y: auto;
+}
+
+@media (max-width: 860px) {
+  .photocard-modal-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+.photocard-preview-pane {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.photocard-canvas-wrapper {
+  width: 100%;
+  max-width: 440px;
+  aspect-ratio: 1 / 1;
+  background: #f8fafc;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#photocardCanvas {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.photocard-loading-spinner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-weight: 600;
+  color: #075603;
+  font-size: 14px;
+}
+
+.spinner-ring {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #eaf5e9;
+  border-top-color: #075603;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.photocard-canvas-meta {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 440px;
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.badge-status-ready {
+  color: #075603;
+  background: #eaf5e9;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.photocard-controls-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group-pc {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group-pc label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.photocard-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.btn-pc-primary {
+  background: #075603;
+  color: #ffffff;
+  border: none;
+  padding: 13px 20px;
+  border-radius: 8px;
+  font-size: 15.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(7, 86, 3, 0.25);
+}
+
+.btn-pc-primary:hover {
+  background: #053b02;
+  transform: translateY(-1px);
+}
+
+.btn-pc-secondary {
+  background: #f8fafc;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  padding: 11px 18px;
+  border-radius: 8px;
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+.btn-pc-secondary:hover {
+  background: #e2e8f0;
+}
+
+.pc-toast-message {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-align: center;
+  animation: pcFadeIn 0.2s ease;
+}
+
+.pc-toast-success {
+  background: #eaf5e9;
+  color: #075603;
+  border: 1px solid #c7e6c5;
+}
+
+.pc-toast-error {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+</style>
+
+<script>
+// ==========================================
+// PHOTOCARD STUDIO ENGINE
+// ==========================================
+const SITE_LOGO_URL = '<%= (typeof SITE_LOGO !== "undefined" && SITE_LOGO) ? SITE_LOGO : "/uploads/upload-1789747295450-44355160.png" %>';
+let loadedSiteLogoImg = null;
+
+// Preload official site logo
+const siteLogoPreloader = new Image();
+siteLogoPreloader.crossOrigin = 'anonymous';
+siteLogoPreloader.onload = function() {
+  loadedSiteLogoImg = siteLogoPreloader;
+  if (document.getElementById('photocardModal') && document.getElementById('photocardModal').style.display === 'flex') {
+    renderPhotocard();
+  }
+};
+siteLogoPreloader.src = SITE_LOGO_URL;
+
+let currentPostData = {
+  id: '',
+  title: '',
+  image: '',
+  slug: '',
+  customImageObj: null
+};
+
+let activeLoadedImage = null;
+let currentBlobUrl = null;
+
+function handlePhotocardBtnClick(btn) {
+  const id = btn.getAttribute('data-id') || '';
+  const title = btn.getAttribute('data-title') || '';
+  const image = btn.getAttribute('data-image') || '';
+  const slug = btn.getAttribute('data-slug') || '';
+  openPhotocardModal(id, title, image, slug);
+}
+
+function openPhotocardModal(id, title, image, slug) {
+  currentPostData = {
+    id: id || '',
+    title: title || '',
+    image: image || '',
+    slug: slug || 'post',
+    customImageObj: null
+  };
+
+  document.getElementById('pcTitleInput').value = currentPostData.title;
+  document.getElementById('pcImageUrlInput').value = currentPostData.image;
+  document.getElementById('pcFooterInput').value = 'ভিজিট করুন: www.sera10.com';
+  document.getElementById('pcFontSizeSelect').value = 'auto';
+  document.getElementById('pcImageFitSelect').value = 'cover';
+
+  const modal = document.getElementById('photocardModal');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  loadAndRenderPhotocard();
+}
+
+function closePhotocardModal() {
+  const modal = document.getElementById('photocardModal');
+  modal.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// Close on backdrop click
+document.addEventListener('click', function(e) {
+  const modal = document.getElementById('photocardModal');
+  if (e.target === modal) {
+    closePhotocardModal();
+  }
+});
+
+// Close on Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closePhotocardModal();
+  }
+});
+
+// Live input listeners
+document.getElementById('pcTitleInput').addEventListener('input', function() {
+  currentPostData.title = this.value;
+  renderPhotocard();
+});
+
+document.getElementById('pcImageUrlInput').addEventListener('change', function() {
+  currentPostData.image = this.value;
+  currentPostData.customImageObj = null;
+  loadAndRenderPhotocard();
+});
+
+document.getElementById('pcFooterInput').addEventListener('input', function() {
+  renderPhotocard();
+});
+
+function handleCustomImageUpload(input) {
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        currentPostData.customImageObj = img;
+        activeLoadedImage = img;
+        renderPhotocard();
+        showToast('ছবি সফলভাবে আপলোড হয়েছে!', 'success');
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+async function loadAndRenderPhotocard() {
+  const spinner = document.getElementById('photocardLoading');
+  if (spinner) spinner.style.display = 'flex';
+
+  if (currentBlobUrl) {
+    try { URL.revokeObjectURL(currentBlobUrl); } catch (e) {}
+    currentBlobUrl = null;
+  }
+
+  if (currentPostData.customImageObj) {
+    activeLoadedImage = currentPostData.customImageObj;
+    if (spinner) spinner.style.display = 'none';
+    const badge = document.getElementById('photocardStatusBadge');
+    if (badge) { badge.textContent = '✓ ছবি সহ প্রস্তুত'; badge.className = 'badge-status-ready'; }
+    renderPhotocard();
+    return;
+  }
+
+  let rawImg = (currentPostData.image || '').trim();
+  if (!rawImg) {
+    activeLoadedImage = null;
+    if (spinner) spinner.style.display = 'none';
+    renderPhotocard();
+    return;
+  }
+
+  // Normalize relative paths: e.g. "uploads/abc.jpg" -> "/uploads/abc.jpg"
+  let resolvedUrl = rawImg;
+  if (!rawImg.startsWith('http://') && !rawImg.startsWith('https://') && !rawImg.startsWith('/') && !rawImg.startsWith('data:')) {
+    resolvedUrl = '/' + rawImg;
+  }
+
+  // List of candidate URLs to try in sequence for maximum reliability
+  const candidateUrls = [];
+
+  if (resolvedUrl.startsWith('http://') || resolvedUrl.startsWith('https://')) {
+    // 1. Try local proxy
+    candidateUrls.push('/api/proxy-image?url=' + encodeURIComponent(resolvedUrl));
+    // 2. Try fast global image proxy wsrv.nl
+    candidateUrls.push('https://wsrv.nl/?url=' + encodeURIComponent(resolvedUrl));
+    // 3. Try direct URL
+    candidateUrls.push(resolvedUrl);
+  } else {
+    // Local path
+    candidateUrls.push(resolvedUrl);
+  }
+
+  for (let i = 0; i < candidateUrls.length; i++) {
+    const urlToTry = candidateUrls[i];
+    try {
+      const resp = await fetch(urlToTry);
+      const contentType = resp.headers.get('content-type') || '';
+      if (resp.ok && (contentType.startsWith('image/') || contentType === 'application/octet-stream')) {
+        const blob = await resp.blob();
+        currentBlobUrl = URL.createObjectURL(blob);
+        const img = new Image();
+        const loaded = await new Promise((resolve) => {
+          img.onload = () => resolve(true);
+          img.onerror = () => resolve(false);
+          img.src = currentBlobUrl;
+        });
+
+        if (loaded) {
+          activeLoadedImage = img;
+          if (spinner) spinner.style.display = 'none';
+          const badge = document.getElementById('photocardStatusBadge');
+          if (badge) { badge.textContent = '✓ ছবি সহ প্রস্তুত'; badge.className = 'badge-status-ready'; }
+          renderPhotocard();
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('Candidate URL attempt failed:', urlToTry, err);
+    }
+  }
+
+  // Final fallback: Direct Image element
+  fallbackDirectImage(resolvedUrl);
+}
+
+function fallbackDirectImage(src) {
+  const spinner = document.getElementById('photocardLoading');
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = function() {
+    activeLoadedImage = img;
+    if (spinner) spinner.style.display = 'none';
+    const badge = document.getElementById('photocardStatusBadge');
+    if (badge) { badge.textContent = '✓ ছবি সহ প্রস্তুত'; badge.className = 'badge-status-ready'; }
+    renderPhotocard();
+  };
+  img.onerror = function() {
+    const img2 = new Image();
+    img2.onload = function() {
+      activeLoadedImage = img2;
+      if (spinner) spinner.style.display = 'none';
+      const badge = document.getElementById('photocardStatusBadge');
+      if (badge) { badge.textContent = '✓ ছবি সহ প্রস্তুত'; badge.className = 'badge-status-ready'; }
+      renderPhotocard();
+    };
+    img2.onerror = function() {
+      activeLoadedImage = null;
+      if (spinner) spinner.style.display = 'none';
+      const badge = document.getElementById('photocardStatusBadge');
+      if (badge) { badge.textContent = '⚠️ ছবি লোড হয়নি'; badge.className = 'badge-status-error'; }
+      renderPhotocard();
+    };
+    img2.src = src;
+  };
+  img.src = src;
+}
+
+function renderPhotocard() {
+  const canvas = document.getElementById('photocardCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  const width = 1080;
+  const height = 1080;
+  canvas.width = width;
+  canvas.height = height;
+
+  // 1. Pure Crisp White Background
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, width, height);
+
+  // 2. Draw SERA 10 Brand Logo at Top Center
+  drawBrandLogo(ctx, width / 2, 70);
+
+  // 3. Draw Featured Image (Cover fit in rounded rectangle)
+  const imgX = 54;
+  const imgY = 124;
+  const imgW = 972;
+  const imgH = 558;
+  const cornerRadius = 26;
+
+  ctx.save();
+  ctx.beginPath();
+  if (ctx.roundRect) {
+    ctx.roundRect(imgX, imgY, imgW, imgH, cornerRadius);
+  } else {
+    // Fallback rounded rect
+    ctx.moveTo(imgX + cornerRadius, imgY);
+    ctx.arcTo(imgX + imgW, imgY, imgX + imgW, imgY + imgH, cornerRadius);
+    ctx.arcTo(imgX + imgW, imgY + imgH, imgX, imgY + imgH, cornerRadius);
+    ctx.arcTo(imgX, imgY + imgH, imgX, imgY, cornerRadius);
+    ctx.arcTo(imgX, imgY, imgX + imgW, imgY, cornerRadius);
+  }
+  ctx.closePath();
+  ctx.clip();
+
+  const fitMode = document.getElementById('pcImageFitSelect').value || 'cover';
+
+  if (activeLoadedImage && (activeLoadedImage.naturalWidth || activeLoadedImage.width)) {
+    const iw = activeLoadedImage.naturalWidth || activeLoadedImage.width;
+    const ih = activeLoadedImage.naturalHeight || activeLoadedImage.height;
+
+    if (fitMode === 'cover') {
+      const hRatio = imgW / iw;
+      const vRatio = imgH / ih;
+      const ratio = Math.max(hRatio, vRatio);
+      const nw = iw * ratio;
+      const nh = ih * ratio;
+      const nx = imgX + (imgW - nw) / 2;
+      const ny = imgY + (imgH - nh) / 2;
+      ctx.drawImage(activeLoadedImage, nx, ny, nw, nh);
+    } else {
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(imgX, imgY, imgW, imgH);
+      const hRatio = imgW / iw;
+      const vRatio = imgH / ih;
+      const ratio = Math.min(hRatio, vRatio);
+      const nw = iw * ratio;
+      const nh = ih * ratio;
+      const nx = imgX + (imgW - nw) / 2;
+      const ny = imgY + (imgH - nh) / 2;
+      ctx.drawImage(activeLoadedImage, nx, ny, nw, nh);
+    }
+  } else {
+    // Elegant Placeholder
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(imgX, imgY, imgW, imgH);
+    ctx.fillStyle = '#075603';
+    ctx.font = '700 36px "Kalpurush", "Hind Siliguri", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('সেরা ১০ - নির্ভরযোগ্য রিভিউ', width / 2, imgY + imgH / 2);
+  }
+  ctx.restore();
+
+  // 4. Draw Post Title (Green, Bengali Font, Centered)
+  const titleText = (currentPostData.title || 'সেরা ১০').trim();
+  const sizeSetting = document.getElementById('pcFontSizeSelect').value;
+  let fontSize = 48;
+
+  if (sizeSetting === 'auto') {
+    if (titleText.length > 70) fontSize = 38;
+    else if (titleText.length > 45) fontSize = 44;
+    else if (titleText.length > 25) fontSize = 48;
+    else fontSize = 54;
+  } else {
+    fontSize = parseInt(sizeSetting, 10) || 48;
+  }
+
+  const lineHeight = Math.round(fontSize * 1.38);
+  ctx.fillStyle = '#075603'; // Strict brand green
+  ctx.font = `700 ${fontSize}px "Kalpurush", "Hind Siliguri", "payasti_uni", sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  const maxTitleWidth = 960;
+  const lines = wrapBengaliText(ctx, titleText, maxTitleWidth);
+
+  // Vertically position the title block nicely below image
+  const titleBlockStartY = 735;
+  const totalBlockHeight = (lines.length - 1) * lineHeight;
+  const adjustedStartY = titleBlockStartY - (totalBlockHeight / 2) + 20;
+
+  lines.forEach((line, index) => {
+    const yPos = adjustedStartY + (index * lineHeight);
+    ctx.fillText(line, width / 2, yPos);
+  });
+
+  // 5. Draw Footer Bar at Bottom
+  const footerText = document.getElementById('pcFooterInput').value || 'ভিজিট করুন: www.sera10.com';
+  drawPhotocardFooter(ctx, footerText, width / 2, 1000);
+}
+
+// Draw Official SERA 10 Site Logo (or vector fallback)
+function drawBrandLogo(ctx, centerX, centerY) {
+  ctx.save();
+
+  if (loadedSiteLogoImg && (loadedSiteLogoImg.naturalWidth || loadedSiteLogoImg.width)) {
+    const iw = loadedSiteLogoImg.naturalWidth || loadedSiteLogoImg.width;
+    const ih = loadedSiteLogoImg.naturalHeight || loadedSiteLogoImg.height;
+    const targetH = 50;
+    const targetW = (iw / ih) * targetH;
+    const targetX = centerX - (targetW / 2);
+    const targetY = centerY - (targetH / 2);
+
+    ctx.drawImage(loadedSiteLogoImg, targetX, targetY, targetW, targetH);
+  } else {
+    // Vector logo fallback
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+
+    // 1. Text "SERA" in bold red
+    ctx.font = '900 34px "Inter", "Arial Black", sans-serif';
+    ctx.letterSpacing = '1px';
+    const seraText = 'SERA';
+    const seraWidth = ctx.measureText(seraText).width;
+
+    // 2. Capsule "1" (dark forest green #075603)
+    const pillW = 11;
+    const pillH = 30;
+    const pillGap = 10;
+
+    // 3. Circle "0" (emerald green #068200)
+    const circleRadius = 15;
+    const circleGap = 7;
+
+    // Calculate total logo width for perfect centering
+    const totalLogoWidth = seraWidth + pillGap + pillW + circleGap + (circleRadius * 2);
+    const startX = centerX - (totalLogoWidth / 2);
+
+    // Draw "SERA"
+    ctx.fillStyle = '#dc2626';
+    ctx.fillText(seraText, startX, centerY);
+
+    // Draw Capsule "1"
+    const pillX = startX + seraWidth + pillGap;
+    const pillY = centerY - (pillH / 2);
+    ctx.fillStyle = '#075603';
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(pillX, pillY, pillW, pillH, 5.5);
+    } else {
+      ctx.rect(pillX, pillY, pillW, pillH);
+    }
+    ctx.fill();
+
+    // Draw Circle "0"
+    const circleCenterX = pillX + pillW + circleGap + circleRadius;
+    const circleCenterY = centerY;
+    
+    const circleGrad = ctx.createLinearGradient(
+      circleCenterX - circleRadius, circleCenterY - circleRadius,
+      circleCenterX + circleRadius, circleCenterY + circleRadius
+    );
+    circleGrad.addColorStop(0, '#068200');
+    circleGrad.addColorStop(1, '#053b02');
+
+    ctx.fillStyle = circleGrad;
+    ctx.beginPath();
+    ctx.arc(circleCenterX, circleCenterY, circleRadius, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+// Text wrapping helper for Bengali
+function wrapBengaliText(ctx, text, maxWidth) {
+  const words = text.split(' ');
+  const lines = [];
+  let currentLine = '';
+
+  for (let i = 0; i < words.length; i++) {
+    const testLine = currentLine ? currentLine + ' ' + words[i] : words[i];
+    const metrics = ctx.measureText(testLine);
+    if (metrics.width > maxWidth && currentLine !== '') {
+      lines.push(currentLine);
+      currentLine = words[i];
+    } else {
+      currentLine = testLine;
+    }
+  }
+  if (currentLine) {
+    lines.push(currentLine);
+  }
+  return lines;
+}
+
+// Draw Footer bar centered
+function drawPhotocardFooter(ctx, text, centerX, centerY) {
+  ctx.save();
+  ctx.textBaseline = 'middle';
+
+  const cleanText = (text || '').trim();
+
+  // If text contains "www.sera10.com" or "sera10.com"
+  if (/sera10\.com/i.test(cleanText)) {
+    let prefix = cleanText.replace(/www\.sera10\.com|sera10\.com/i, '').trim();
+    if (prefix.endsWith(':') || prefix.endsWith('/')) {
+      prefix = prefix.slice(0, -1).trim() + ':';
+    }
+    const domain = 'www.sera10.com';
+
+    ctx.font = '500 28px "Kalpurush", "Hind Siliguri", sans-serif';
+    const prefixW = prefix ? ctx.measureText(prefix + ' ').width : 0;
+
+    ctx.font = '700 28px "Inter", "Arial", sans-serif';
+    const domainW = ctx.measureText(domain).width;
+
+    const totalW = prefixW + domainW;
+    let currX = centerX - (totalW / 2);
+
+    if (prefix) {
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#64748b';
+      ctx.font = '500 28px "Kalpurush", "Hind Siliguri", sans-serif';
+      ctx.fillText(prefix + ' ', currX, centerY);
+      currX += prefixW;
+    }
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#0f172a';
+    ctx.font = '700 28px "Inter", "Arial", sans-serif';
+    ctx.fillText(domain, currX, centerY);
+  } else {
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#475569';
+    ctx.font = '600 28px "Kalpurush", "Hind Siliguri", sans-serif';
+    ctx.fillText(cleanText, centerX, centerY);
+  }
+
+  ctx.restore();
+}
+
+function downloadPhotocardImage() {
+  const canvas = document.getElementById('photocardCanvas');
+  if (!canvas) return;
+
+  const slug = currentPostData.slug || 'sera10-post';
+  const cleanSlug = slug.replace(/[^a-zA-Z0-9\-_]/g, '-').toLowerCase();
+  const filename = `photocard-${cleanSlug}.png`;
+
+  try {
+    const dataUrl = canvas.toDataURL('image/png', 1.0);
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = dataUrl;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('ফটোকার্ড ডাউনলোড সম্পন্ন হয়েছে!', 'success');
+  } catch (err) {
+    console.error('Download error:', err);
+    showToast('ডাউনলোড করতে সমস্যা হয়েছে: ' + err.message, 'error');
+  }
+}
+
+async function copyPhotocardToClipboard() {
+  const canvas = document.getElementById('photocardCanvas');
+  if (!canvas) return;
+
+  try {
+    canvas.toBlob(async function(blob) {
+      if (!blob) {
+        showToast('ছবি রূপান্তর ব্যর্থ হয়েছে', 'error');
+        return;
+      }
+      try {
+        const item = new ClipboardItem({ 'image/png': blob });
+        await navigator.clipboard.write([item]);
+        showToast('✓ ফটোকার্ড ক্লিপবোর্ডে কপি করা হয়েছে! (Ctrl+V দিয়ে পেস্ট করুন)', 'success');
+      } catch (err) {
+        console.error('Clipboard copy error:', err);
+        // Fallback to downloading if clipboard write is blocked
+        downloadPhotocardImage();
+      }
+    }, 'image/png', 1.0);
+  } catch (err) {
+    showToast('ক্লিপবোর্ডে কপি ব্যর্থ হয়েছে', 'error');
+  }
+}
+
+function showToast(message, type = 'success') {
+  const toast = document.getElementById('pcToastMsg');
+  if (!toast) return;
+
+  toast.textContent = message;
+  toast.className = 'pc-toast-message ' + (type === 'success' ? 'pc-toast-success' : 'pc-toast-error');
+  toast.style.display = 'block';
+
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 4000);
+}
+
+// Ensure web fonts are fully loaded before rendering
+if (document.fonts) {
+  document.fonts.ready.then(() => {
+    if (document.getElementById('photocardModal') && document.getElementById('photocardModal').style.display === 'flex') {
+      renderPhotocard();
+    }
+  });
+}
+</script>
+
 <%- include('partials/admin_layout_end') %>
+

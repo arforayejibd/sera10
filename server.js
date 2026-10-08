@@ -60,7 +60,10 @@ app.use(session({
 // Static files (ETag enabled for instant freshness checks, no stale caching)
 app.use(express.static(path.join(__dirname, 'public'), {
   etag: true,
-  lastModified: true
+  lastModified: true,
+  setHeaders: (res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
 }));
 
 // Dynamic routes: Never cache HTML pages so updates and new posts are immediately visible
