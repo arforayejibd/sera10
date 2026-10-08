@@ -155,28 +155,27 @@
                 <%= new Date(p.published_at || p.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %>
               </td>
               <td>
-                <div class="actions-group" style="justify-content: flex-end;">
-                  <!-- Photocard Generator / Download Action -->
+                <div class="actions-group" style="justify-content: flex-end; gap: 6px;">
+                  <!-- Photocard Generator Action -->
                   <button type="button" 
                           class="btn-table-action" 
-                          style="background: #eaf5e9; color: #075603; border: 1px solid #c7e6c5; font-weight: 600; gap: 4px;" 
+                          style="background: #eaf5e9; color: #075603; border: 1px solid #c7e6c5; padding: 7px 9px;" 
                           data-id="<%= p.id %>"
                           data-title="<%= (p.title || '').replace(/"/g, '&quot;') %>"
                           data-image="<%= (p.featured_image || '').replace(/"/g, '&quot;') %>"
                           data-slug="<%= (p.slug || '').replace(/"/g, '&quot;') %>"
                           onclick="handlePhotocardBtnClick(this)"
-                          title="সোশ্যাল ফটোকার্ড তৈরি ও ডাউনলোড করুন">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          title="ফটোকার্ড তৈরি ও ডাউনলোড করুন">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                       <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                       <circle cx="8.5" cy="8.5" r="1.5"></circle>
                       <polyline points="21 15 16 10 5 21"></polyline>
                     </svg>
-                    ফটোকার্ড
                   </button>
 
                   <!-- Live Preview Link -->
-                  <a href="/post/<%= encodeURIComponent(p.slug) %>" target="_blank" class="btn-table-action" style="background: #f1f5f9; color: #334155;" title="View on site">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <a href="/post/<%= encodeURIComponent(p.slug) %>" target="_blank" class="btn-table-action" style="background: #f1f5f9; color: #334155; padding: 7px 9px;" title="সাইটে দেখুন (Live Preview)">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                       <polyline points="15 3 21 3 21 9"></polyline>
                       <line x1="10" y1="14" x2="21" y2="3"></line>
@@ -184,18 +183,17 @@
                   </a>
 
                   <!-- Edit Action -->
-                  <a href="/admin/posts/<%= p.id %>/edit" class="btn-table-action" style="background: #eaf5e9; color: #075603;" title="Edit post">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <a href="/admin/posts/<%= p.id %>/edit" class="btn-table-action" style="background: #eaf5e9; color: #075603; padding: 7px 9px;" title="এডিট করুন (Edit Post)">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                     </svg>
-                    Edit
                   </a>
 
                   <!-- Delete Action -->
                   <form action="/admin/posts/<%= p.id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to permanently delete this post?');">
-                    <button type="submit" class="btn-table-action btn-reject" title="Delete post">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <button type="submit" class="btn-table-action btn-reject" style="padding: 7px 9px;" title="মুছে ফেলুন (Delete Post)">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="3 6 5 6 21 6"></polyline>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                       </svg>
