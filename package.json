@@ -1,7 +1,7 @@
 {
-  "name": "payasti",
+  "name": "sera10",
   "version": "1.0.0",
-  "description": "",
+  "description": "সেরা ১০ (Sera 10) - প্রোডাক্ট রিভিউ ও ব্লগ",
   "main": "index.js",
   "scripts": {
     "start": "node server.js",

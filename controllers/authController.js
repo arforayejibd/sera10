@@ -297,8 +297,6 @@ exports.getSitemap = async (req, res) => {
 
     // Static Pages
     xml += `  <url><loc>${SITE_URL}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>\n`;
-    xml += `  <url><loc>${SITE_URL}/bangla-spell</loc><changefreq>daily</changefreq><priority>0.95</priority></url>\n`;
-    xml += `  <url><loc>${SITE_URL}/spelling-rules</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>\n`;
     xml += `  <url><loc>${SITE_URL}/authors</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>\n`;
     xml += `  <url><loc>${SITE_URL}/books</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>\n`;
     xml += `  <url><loc>${SITE_URL}/terms</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>\n`;
@@ -567,18 +565,9 @@ exports.postResetPassword = async (req, res) => {
   }
 };
 
-// Spelling Rules & Interactive Spell Checker Page
+// Spelling Rules / Spell Checker (redirected to home)
 exports.getSpellingRules = (req, res) => {
-  res.render('spelling_rules', {
-    pageTitle: 'পয়স্তি বাংলা বানান শুদ্ধিকরণ',
-    seo: generateSeoMeta({
-      title: 'পয়স্তি বাংলা বানান শুদ্ধিকরণ',
-      description: 'বাংলা একাডেমির আধুনিক প্রমিত বানানরীতি অনুযায়ী লাইভ বানান পরীক্ষক ও শুদ্ধিকরণ টুল।',
-      canonical: `${SITE_URL}/bangla-spell`
-    }),
-    editorialBoard: EDITORIAL_BOARD,
-    contact: CONTACT
-  });
+  res.redirect(301, '/');
 };
 
 // Terms Page

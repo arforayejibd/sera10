@@ -23,13 +23,13 @@
       <div class="hero-banner-content">
         <div class="hero-pill-badge">
           <span>✨</span>
-          <span>বিশ্বস্ত ও তথ্যবহুল সেরা ১০ প্রোডাক্ট রিভিউ</span>
+          <span>বিশ্বস্ত ও তথ্যবহুল প্রোডাক্ট রিভিউ ও ব্লগ</span>
         </div>
         <h1 class="hero-banner-title">
-          সঠিক পণ্য কেনার আগে <br><span>সেরা ১০টি তালিকার সাথে মিলিয়ে নিন</span>
+          সঠিক পণ্য ও তথ্য জানার আগে <br><span>সেরা ১০ তালিকার সাথে মিলিয়ে নিন</span>
         </h1>
         <p class="hero-banner-desc">
-          প্রযুক্তি, বই, লাইফস্টাইল ও হোম অ্যাপ্লায়েন্সের বিশদ রিভিউ, তুলনামূলক রেটিং এবং সেরা ডিল এক ঠিকানায়।
+          প্রযুক্তি, বই, লাইফস্টাইল ও হোম অ্যাপ্লায়েন্সের বিশদ রিভিউ, তুলনামূলক রেটিং এবং তথ্যসমৃদ্ধ ব্লগ এক ঠিকানায়।
         </p>
 
         <!-- Search Form -->
@@ -39,7 +39,7 @@
               type="text" 
               name="q" 
               class="hero-search-input" 
-              placeholder="কী ধরনের পণ্য বা রিভিউ খুঁজছেন? (যেমন: সেরা মোবাইল, বই, ল্যাপটপ...)" 
+              placeholder="কী ধরনের পণ্য বা ব্লগ খুঁজছেন?" 
               required
             >
             <button type="submit" class="hero-search-btn">অনুসন্ধান</button>
@@ -47,14 +47,14 @@
         </form>
 
         <!-- Trending Tags -->
+        <% if (typeof popularSearches !== 'undefined' && popularSearches && popularSearches.length > 0) { %>
         <div class="hero-trending-tags">
           <span>জনপ্রিয় সার্চ:</span>
-          <a href="/search?q=স্মার্টফোন" class="hero-trending-tag-link">স্মার্টফোন</a>
-          <a href="/search?q=বই" class="hero-trending-tag-link">সেরা বই</a>
-          <a href="/search?q=ল্যাপটপ" class="hero-trending-tag-link">ল্যাপটপ</a>
-          <a href="/search?q=ফ্রিজ" class="hero-trending-tag-link">ফ্রিজ</a>
-          <a href="/search?q=ঘড়ি" class="hero-trending-tag-link">স্মার্টওয়াচ</a>
+          <% popularSearches.forEach(function(item) { %>
+          <a href="/search?q=<%= encodeURIComponent(item.query) %>" class="hero-trending-tag-link"><%= item.query %></a>
+          <% }); %>
         </div>
+        <% } %>
       </div>
     </section>
 

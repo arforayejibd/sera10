@@ -85,8 +85,14 @@ router.get('/media', (req, res) => {
       }
     }
 
-    // Sort by newest first
-    files.sort((a, b) => b.mtime - a.mtime);
+    // Sort by newest first using timestamp
+    files.sort((a, b) => {
+      const matchA = a.filename.match(/(?:sera10|upload)-(\d{13})/);
+      const timeA = matchA ? parseInt(matchA[1], 10) : (a.mtime ? new Date(a.mtime).getTime() : 0);
+      const matchB = b.filename.match(/(?:sera10|upload)-(\d{13})/);
+      const timeB = matchB ? parseInt(matchB[1], 10) : (b.mtime ? new Date(b.mtime).getTime() : 0);
+      return timeB - timeA;
+    });
 
     res.json({ success: true, files });
   } catch (err) {

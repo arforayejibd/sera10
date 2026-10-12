@@ -3,7 +3,7 @@ const router = express.Router();
 const homeController = require('../controllers/homeController');
 const postController = require('../controllers/postController');
 const bookController = require('../controllers/bookController');
-const { generateSeoMeta, getSpellCheckerSchema } = require('../middleware/seo');
+const { generateSeoMeta } = require('../middleware/seo');
 const { requireAuth } = require('../middleware/auth');
 const db = require('../config/database');
 
@@ -42,7 +42,7 @@ router.get(['/topic/selected', '/topic/:slug'], (req, res) => {
   postController.getCategoryPage(req, res);
 });
 
-// Bengali Spelling Rules & Live Interactive Spell Checker
+// Legacy spell checker URLs redirect to homepage
 router.get([
   '/bangla-spell',
   '/spelling-rules',
@@ -53,31 +53,7 @@ router.get([
   '/বাংলা-বানান-পরীক্ষক',
   encodeURI('/বাংলা-বানান-শুদ্ধিকরণ'),
   encodeURI('/বাংলা-বানান-পরীক্ষক')
-], (req, res) => {
-  const schema = getSpellCheckerSchema();
-  const seo = generateSeoMeta({
-    exactTitle: 'বাংলা বানান সংশোধন ও শুদ্ধিকরণ | পয়স্তি বাংলা স্পেল চেকার (Bangla Spell Checker)',
-    description: 'অনলাইন বাংলা বানান সংশোধন ও শুদ্ধিকরণ টুল। বাংলা একাডেমি প্রমিত আধুনিক বানানরীতি ও ১ লক্ষাধিক শব্দের অভিধান অনুযায়ী যেকোনো লেখার ভুল বানান স্বয়ংক্রিয়ভাবে পরীক্ষা ও এক ক্লিকে সংশোধন করুন।',
-    url: '/bangla-spell',
-    keywords: [
-      'বাংলা বানান সংশোধন',
-      'বাংলা বানান শুদ্ধিকরণ',
-      'বাংলা স্পেল চেকার',
-      'bangla spell checker',
-      'bengali spelling checker',
-      'অনলাইন বানান পরীক্ষক',
-      'বাংলা একাডেমি প্রমিত বানান',
-      'সঠিক বাংলা বানান',
-      'bangla grammar check'
-    ],
-    schema: schema
-  });
-
-  res.render('spelling_rules', {
-    pageTitle: 'বাংলা বানান সংশোধন ও শুদ্ধিকরণ | পয়স্তি বাংলা স্পেল চেকার',
-    seo: seo
-  });
-});
+], (req, res) => res.redirect(301, '/'));
 
 router.get(['/terms-and-condition', '/terms'], (req, res) => {
   res.render('page', {

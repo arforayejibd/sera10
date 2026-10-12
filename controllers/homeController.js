@@ -117,6 +117,30 @@ exports.getHomePage = async (req, res) => {
       LIMIT 10
     `).all();
 
+    // 9. Fetch Top 5 Popular Search Queries
+    let popularSearches = [];
+    try {
+      popularSearches = await db.query(`
+        SELECT query, count
+        FROM search_queries
+        WHERE LENGTH(TRIM(query)) >= 2
+        ORDER BY count DESC, last_searched_at DESC
+        LIMIT 5
+      `);
+    } catch (searchErr) {
+      console.warn('Could not fetch popular searches:', searchErr.message);
+    }
+
+    if (!popularSearches || popularSearches.length === 0) {
+      popularSearches = [
+        { query: 'স্মার্টফোন', count: 10 },
+        { query: 'সেরা বই', count: 8 },
+        { query: 'ল্যাপটপ', count: 6 },
+        { query: 'ফ্রিজ', count: 4 },
+        { query: 'স্মার্টওয়াচ', count: 2 }
+      ];
+    }
+
     // SEO & Schema
     const seo = generateSeoMeta({
       title: `${SITE_NAME} - ${TAGLINE}`,
@@ -134,6 +158,7 @@ exports.getHomePage = async (req, res) => {
       lifestyleReviews,
       latestPosts,
       topCategories,
+      popularSearches,
       seo,
       toBengaliNumber,
       formatBengaliDate,

@@ -1400,21 +1400,40 @@ exports.postBulkDeleteTags = async (req, res) => {
 // ==========================================
 exports.getMedia = (req, res) => {
   const uploadsDir = path.join(__dirname, '..', 'public', 'uploads');
+  const validExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.svg'];
   let mediaFiles = [];
 
   try {
     if (fs.existsSync(uploadsDir)) {
       const files = fs.readdirSync(uploadsDir);
-      mediaFiles = files.map(file => {
+      for (const file of files) {
+        const ext = path.extname(file).toLowerCase();
+        if (!validExtensions.includes(ext)) continue;
+
         const filePath = path.join(uploadsDir, file);
-        const stats = fs.statSync(filePath);
-        return {
-          filename: file,
-          url: `/uploads/${file}`,
-          size: (stats.size / 1024).toFixed(1) + ' KB',
-          createdAt: stats.birthtime || stats.mtime
-        };
-      }).reverse();
+        try {
+          const stats = fs.statSync(filePath);
+          if (stats.isFile()) {
+            const match = file.match(/(?:sera10|upload)-(\d{13})/);
+            const fileTimestamp = match 
+              ? parseInt(match[1], 10) 
+              : Math.max(stats.mtime ? new Date(stats.mtime).getTime() : 0, stats.birthtime ? new Date(stats.birthtime).getTime() : 0);
+
+            mediaFiles.push({
+              filename: file,
+              url: `/uploads/${file}`,
+              size: (stats.size / 1024).toFixed(1) + ' KB',
+              timestamp: fileTimestamp,
+              createdAt: stats.birthtime || stats.mtime
+            });
+          }
+        } catch (e) {
+          // Skip unreadable files
+        }
+      }
+
+      // Sort newest first
+      mediaFiles.sort((a, b) => b.timestamp - a.timestamp);
     }
   } catch (err) {
     console.error('Error reading media dir:', err);

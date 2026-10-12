@@ -510,6 +510,18 @@ exports.searchPosts = async (req, res) => {
       return res.redirect('/');
     }
 
+    // Track search query for top trending searches (only on first page)
+    if (page === 1) {
+      const cleanQ = query.replace(/[<>'"]/g, '').replace(/\s+/g, ' ').trim();
+      if (cleanQ.length >= 2 && cleanQ.length <= 100) {
+        db.query(`
+          INSERT INTO search_queries (query, count, last_searched_at)
+          VALUES (?, 1, NOW())
+          ON DUPLICATE KEY UPDATE count = count + 1, last_searched_at = NOW()
+        `, [cleanQ]).catch(e => console.warn('Search track warning:', e.message));
+      }
+    }
+
     const searchTerm = `%${query}%`;
 
     const totalRow = await db.prepare(`
@@ -567,6 +579,16 @@ exports.apiSearch = async (req, res) => {
     const query = (req.query.q || '').trim();
     if (!query || query.length < 2) {
       return res.json({ results: [] });
+    }
+
+    // Track search query for popular searches
+    const cleanQ = query.replace(/[<>'"]/g, '').replace(/\s+/g, ' ').trim();
+    if (cleanQ.length >= 2 && cleanQ.length <= 100) {
+      db.query(`
+        INSERT INTO search_queries (query, count, last_searched_at)
+        VALUES (?, 1, NOW())
+        ON DUPLICATE KEY UPDATE count = count + 1, last_searched_at = NOW()
+      `, [cleanQ]).catch(e => console.warn('API Search track warning:', e.message));
     }
 
     const searchTerm = `%${query}%`;

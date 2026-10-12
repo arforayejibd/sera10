@@ -18,7 +18,7 @@ router.get('/reset-password', authController.getResetPasswordPage);
 router.post('/reset-password', authController.postResetPassword);
 
 // Static Rules & Terms
-router.get(['/spelling-rules', '/bangla-spell'], authController.getSpellingRules);
+router.get(['/spelling-rules', '/bangla-spell'], (req, res) => res.redirect(301, '/'));
 router.get(['/terms', '/terms-and-condition'], authController.getTerms);
 
 // XML Sitemap & Robots.txt for Google SEO

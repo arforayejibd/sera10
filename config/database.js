@@ -223,6 +223,34 @@ async function initDatabase() {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
       `);
 
+      await connection.query(`
+        CREATE TABLE IF NOT EXISTS search_queries (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          query VARCHAR(191) NOT NULL UNIQUE,
+          count INT DEFAULT 1,
+          last_searched_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          INDEX idx_search_count (count DESC)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+      `);
+
+      // Seed initial popular search queries if table is empty
+      try {
+        const [existingSearches] = await connection.query(`SELECT COUNT(*) AS total FROM search_queries`);
+        if (existingSearches && existingSearches[0] && existingSearches[0].total === 0) {
+          await connection.query(`
+            INSERT IGNORE INTO search_queries (query, count, last_searched_at) VALUES
+            ('স্মার্টফোন', 1, DATE_SUB(NOW(), INTERVAL 1 DAY)),
+            ('সেরা বই', 1, DATE_SUB(NOW(), INTERVAL 1 DAY)),
+            ('ল্যাপটপ', 1, DATE_SUB(NOW(), INTERVAL 1 DAY)),
+            ('ফ্রিজ', 1, DATE_SUB(NOW(), INTERVAL 1 DAY)),
+            ('স্মার্টওয়াচ', 1, DATE_SUB(NOW(), INTERVAL 1 DAY))
+          `);
+        }
+      } catch (seedErr) {
+        // ignore seed error
+      }
+
       // Ensure rating columns exist on posts table
       try {
         const [postCols] = await connection.query(`
