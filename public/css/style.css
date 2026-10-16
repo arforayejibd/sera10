@@ -347,6 +347,87 @@ button, input, textarea, select {
   gap: 10px;
 }
 
+/* Highlighted Header CTA Button: বই রিভিউ পাঠান */
+.header-review-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background-color: var(--brand-primary, #075603);
+  background-image: linear-gradient(135deg, #075603 0%, #066d03 100%);
+  color: #ffffff !important;
+  font-family: 'Kalpurush', 'payasti_uni', 'Hind Siliguri', sans-serif;
+  font-size: 15.5px;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(7, 86, 3, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+}
+
+.header-review-btn:hover {
+  background-color: #053b02;
+  background-image: linear-gradient(135deg, #053b02 0%, #075603 100%);
+  color: #ffffff !important;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 14px rgba(7, 86, 3, 0.38);
+}
+
+.header-review-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(7, 86, 3, 0.2);
+}
+
+.header-review-btn.active {
+  background-color: #053b02;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9), 0 0 0 4px #075603;
+}
+
+.header-review-btn-icon {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.header-review-btn:hover .header-review-btn-icon {
+  transform: scale(1.12);
+}
+
+/* Dark mode & Sepia overrides */
+html.theme-dark .header-review-btn {
+  background-color: #068200;
+  background-image: linear-gradient(135deg, #075603 0%, #068200 100%);
+  box-shadow: 0 2px 10px rgba(6, 130, 0, 0.35);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+html.theme-dark .header-review-btn:hover {
+  background-color: #075603;
+  box-shadow: 0 4px 16px rgba(6, 130, 0, 0.5);
+}
+
+html.theme-sepia .header-review-btn {
+  background-color: #075603;
+  color: #ffffff !important;
+}
+
+/* Mobile Drawer Review CTA Button (Hidden on Desktop, Visible on Mobile Menu) */
+.mobile-drawer-review-cta {
+  display: none !important;
+}
+
+@media (max-width: 992px) {
+  .mobile-drawer-review-cta {
+    display: block !important;
+    padding: 8px 4px 14px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--border-color);
+  }
+}
+
 .header-theme-toggle-btn,
 .header-search-btn {
   display: inline-flex;

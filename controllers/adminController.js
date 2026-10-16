@@ -1656,3 +1656,126 @@ exports.postMenu = async (req, res) => {
   }
 };
 
+// ==========================================
+// 11. BOOK REVIEW SUBMISSIONS MANAGEMENT
+// ==========================================
+exports.getBookReviews = async (req, res) => {
+  try {
+    const statusFilter = req.query.status || 'all';
+    const searchQuery = (req.query.q || '').trim();
+    const page = Math.max(1, parseInt(req.query.page || '1', 10));
+    const limit = 15;
+    const offset = (page - 1) * limit;
+
+    // Calculate status counts
+    const countAllRow = await db.prepare("SELECT COUNT(*) AS total FROM book_reviews").get();
+    const countPendingRow = await db.prepare("SELECT COUNT(*) AS total FROM book_reviews WHERE status = 'pending'").get();
+    const countApprovedRow = await db.prepare("SELECT COUNT(*) AS total FROM book_reviews WHERE status = 'approved'").get();
+    const countRejectedRow = await db.prepare("SELECT COUNT(*) AS total FROM book_reviews WHERE status = 'rejected'").get();
+    const countCompletedRow = await db.prepare("SELECT COUNT(*) AS total FROM book_reviews WHERE status = 'completed'").get();
+
+    const counts = {
+      all: countAllRow ? countAllRow.total : 0,
+      pending: countPendingRow ? countPendingRow.total : 0,
+      approved: countApprovedRow ? countApprovedRow.total : 0,
+      rejected: countRejectedRow ? countRejectedRow.total : 0,
+      completed: countCompletedRow ? countCompletedRow.total : 0
+    };
+
+    // Build filter query
+    let whereClauses = [];
+    let params = [];
+
+    if (statusFilter && statusFilter !== 'all') {
+      whereClauses.push("status = ?");
+      params.push(statusFilter);
+    }
+
+    if (searchQuery) {
+      whereClauses.push("(title LIKE ? OR author_name LIKE ? OR email LIKE ? OR mobile LIKE ? OR transaction_id LIKE ?)");
+      const searchWild = `%${searchQuery}%`;
+      params.push(searchWild, searchWild, searchWild, searchWild, searchWild);
+    }
+
+    const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+
+    // Count total filtered items
+    const countSql = `SELECT COUNT(*) AS total FROM book_reviews ${whereSql}`;
+    const totalRow = await db.prepare(countSql).get(params);
+    const totalFiltered = totalRow ? totalRow.total : 0;
+    const totalPages = Math.ceil(totalFiltered / limit) || 1;
+
+    // Query paginated reviews
+    const querySql = `
+      SELECT * FROM book_reviews 
+      ${whereSql}
+      ORDER BY id DESC 
+      LIMIT ${limit} OFFSET ${offset}
+    `;
+    const reviews = await db.prepare(querySql).all(params);
+
+    const seo = generateSeoMeta({ title: 'বই রিভিউ আবেদন ব্যবস্থাপনা - সেরা ১০ এডমিন' });
+
+    res.render('admin/book_reviews', {
+      user: req.user,
+      reviews: reviews || [],
+      counts,
+      statusFilter,
+      searchQuery,
+      currentPage: page,
+      totalPages,
+      totalFiltered,
+      activeMenu: 'book_reviews',
+      seo,
+      toBengaliNumber,
+      formatBengaliDate,
+      successNotice: req.query.updated === '1' ? 'বই রিভিউয়ের স্ট্যাটাস সফলভাবে আপডেট করা হয়েছে।' : (req.query.deleted === '1' ? 'বই রিভিউ আবেদনটি মুছে ফেলা হয়েছে।' : null)
+    });
+  } catch (err) {
+    console.error('Error in getBookReviews:', err);
+    res.redirect('/admin');
+  }
+};
+
+exports.postUpdateBookReviewStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status, admin_notes } = req.body;
+  const isAjax = req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'));
+
+  try {
+    const validStatuses = ['pending', 'approved', 'rejected', 'completed'];
+    if (!validStatuses.includes(status)) {
+      if (isAjax) return res.status(400).json({ success: false, message: 'ভুল স্ট্যাটাস দেওয়া হয়েছে।' });
+      return res.redirect('/admin/book-reviews');
+    }
+
+    await db.prepare(`
+      UPDATE book_reviews 
+      SET status = ?, admin_notes = ? 
+      WHERE id = ?
+    `).run(status, admin_notes || '', id);
+
+    if (isAjax) {
+      return res.json({ success: true, message: 'স্ট্যাটাস আপডেট করা হয়েছে।' });
+    }
+
+    res.redirect(req.headers.referer || '/admin/book-reviews?updated=1');
+  } catch (err) {
+    console.error('Error in postUpdateBookReviewStatus:', err);
+    if (isAjax) return res.status(500).json({ success: false, message: 'সার্ভার ত্রুটি।' });
+    res.redirect('/admin/book-reviews');
+  }
+};
+
+exports.deleteBookReview = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.prepare('DELETE FROM book_reviews WHERE id = ?').run(id);
+    res.redirect('/admin/book-reviews?deleted=1');
+  } catch (err) {
+    console.error('Error deleting book review:', err);
+    res.redirect('/admin/book-reviews');
+  }
+};
+
+

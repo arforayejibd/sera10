@@ -1,0 +1,1029 @@
+<%- include('partials/admin_layout_start', { 
+  pageTitle: 'Book Review Submissions', 
+  pageBreadcrumb: 'Book Reviews',
+  topbarButton: { text: '↗ Visit Review Form', url: '/submit-book-review' }
+}) %>
+
+<% if (typeof successNotice !== 'undefined' && successNotice) { %>
+  <div style="background: #eaf5e9; border: 1.5px solid #075603; color: #075603; padding: 14px 20px; border-radius: 10px; margin-bottom: 20px; font-weight: 600; display: flex; align-items: center; gap: 10px;">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+    <span><%= successNotice %></span>
+  </div>
+<% } %>
+
+<!-- Filter Bar & Tabs -->
+<div class="admin-card" style="margin-bottom: 20px;">
+  <div style="padding: 16px 20px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between;">
+    <!-- Status Tabs -->
+    <div style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;">
+      <a href="/admin/book-reviews?status=all&q=<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" 
+         class="btn-view-site" 
+         style="<%= (!statusFilter || statusFilter === 'all') ? 'background: var(--admin-primary); color: #fff; border-color: var(--admin-primary);' : '' %>">
+        All (<%= counts.all %>)
+      </a>
+      <a href="/admin/book-reviews?status=pending&q=<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" 
+         class="btn-view-site" 
+         style="<%= statusFilter === 'pending' ? 'background: #d97706; color: #fff; border-color: #d97706;' : '' %>">
+        Pending (<%= counts.pending %>)
+      </a>
+      <a href="/admin/book-reviews?status=approved&q=<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" 
+         class="btn-view-site" 
+         style="<%= statusFilter === 'approved' ? 'background: var(--admin-primary); color: #fff; border-color: var(--admin-primary);' : '' %>">
+        Approved (<%= counts.approved %>)
+      </a>
+      <a href="/admin/book-reviews?status=completed&q=<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" 
+         class="btn-view-site" 
+         style="<%= statusFilter === 'completed' ? 'background: #047857; color: #fff; border-color: #047857;' : '' %>">
+        Completed (<%= counts.completed %>)
+      </a>
+      <a href="/admin/book-reviews?status=rejected&q=<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" 
+         class="btn-view-site" 
+         style="<%= statusFilter === 'rejected' ? 'background: #dc2626; color: #fff; border-color: #dc2626;' : '' %>">
+        Rejected (<%= counts.rejected %>)
+      </a>
+    </div>
+
+    <!-- Search Form -->
+    <form action="/admin/book-reviews" method="GET" style="display: flex; gap: 8px; flex-wrap: wrap;">
+      <input type="hidden" name="status" value="<%= statusFilter %>">
+      <div style="display: flex; gap: 6px;">
+        <input 
+          type="text" 
+          name="q" 
+          value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" 
+          class="admin-form-input" 
+          placeholder="বইয়ের নাম, লেখক, ইমেইল, মোবাইল..." 
+          style="width: 250px; padding: 8px 14px; font-size: 15px;"
+        >
+        <button type="submit" class="btn-view-site" style="padding: 8px 16px; font-size: 15px;">অনুসন্ধান</button>
+        <% if (searchQuery || (statusFilter && statusFilter !== 'all')) { %>
+          <a href="/admin/book-reviews" class="btn-view-site" style="padding: 8px 14px; color: #dc2626; font-size: 15px;" title="রিসেট">✕</a>
+        <% } %>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Reviews Table Card -->
+<div class="admin-card">
+  <div class="admin-card-header">
+    <div class="admin-card-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--admin-primary);">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+      </svg>
+      <span>Book Review Requests</span>
+      <span class="admin-card-badge"><%= totalFiltered %> <%= totalFiltered === 1 ? 'আবেদন' : 'আবেদনসমূহ' %></span>
+    </div>
+  </div>
+
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th style="width: 60px;">প্রচ্ছদ</th>
+          <th>বই ও লেখক</th>
+          <th>আবেদনকারী (ইমেইল ও মোবাইল)</th>
+          <th>বিকাশ লেনদেন</th>
+          <th>তারিখ</th>
+          <th>স্ট্যাটাস</th>
+          <th style="text-align: right; min-width: 140px;">অ্যাকশন</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (reviews && reviews.length > 0) { %>
+          <% reviews.forEach(r => { %>
+            <tr>
+              <td>
+                <% if (r.cover_image) { %>
+                  <img src="<%= r.cover_image %>" alt="<%= r.title %>" style="width: 44px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.06); cursor: pointer;" onclick="openDetailsModal(<%= r.id %>)">
+                <% } else { %>
+                  <div style="width: 44px; height: 60px; border-radius: 6px; background: #eaf5e9; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer;" onclick="openDetailsModal(<%= r.id %>)">
+                    📖
+                  </div>
+                <% } %>
+              </td>
+              <td>
+                <div class="post-title-cell" style="cursor: pointer;" onclick="openDetailsModal(<%= r.id %>)">
+                  <span style="font-weight: 700; color: var(--admin-text-main); font-size: 17px;"><%= r.title %></span>
+                </div>
+                <div style="font-size: 15px; color: var(--admin-text-sub); margin-top: 2px;">
+                  লেখক: <strong style="color: var(--admin-text-main);"><%= r.author_name %></strong>
+                </div>
+                <% if (r.rokomari_url) { %>
+                  <div style="margin-top: 4px;">
+                    <a href="<%= r.rokomari_url %>" target="_blank" rel="noopener" style="font-size: 13.5px; color: var(--admin-primary); text-decoration: underline;">
+                      রকমারি লিঙ্ক &nearr;
+                    </a>
+                  </div>
+                <% } %>
+              </td>
+              <td>
+                <div>
+                  <a href="mailto:<%= r.email %>" style="font-size: 15px; color: var(--admin-primary); font-weight: 600;">
+                    <%= r.email %>
+                  </a>
+                </div>
+                <div style="font-size: 15px; color: var(--admin-text-muted); margin-top: 3px;">
+                  📞 <a href="tel:<%= r.mobile %>" style="color: inherit;"><%= r.mobile %></a>
+                </div>
+              </td>
+              <td>
+                <div style="display: inline-flex; align-items: center; gap: 6px; background: #fff5fa; border: 1px solid #fbcfe8; padding: 4px 10px; border-radius: 6px;">
+                  <span style="color: #c10f5c; font-weight: 700; font-size: 13px;">bKash</span>
+                  <span style="font-weight: 700; font-size: 15px; letter-spacing: 0.5px; color: #831843;"><%= r.transaction_id %></span>
+                </div>
+                <div style="font-size: 13px; color: var(--admin-text-sub); margin-top: 4px;">
+                  ফি: <%= r.payment_amount || '২০০ টাকা' %>
+                </div>
+              </td>
+              <td style="white-space: nowrap; font-size: 15px; color: var(--admin-text-muted);">
+                <%= formatBengaliDate(r.created_at) %>
+              </td>
+              <td>
+                <% if (r.status === 'pending') { %>
+                  <span style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 13.5px; display: inline-flex; align-items: center; gap: 4px;">
+                    ⏳ অপেক্ষমাণ
+                  </span>
+                <% } else if (r.status === 'approved') { %>
+                  <span style="background: #eaf5e9; color: #075603; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 13.5px; display: inline-flex; align-items: center; gap: 4px;">
+                    ✓ অনুমোদিত
+                  </span>
+                <% } else if (r.status === 'completed') { %>
+                  <span style="background: #eaf5e9; color: #075603; border: 1px solid #d4f5d8; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 13.5px; display: inline-flex; align-items: center; gap: 4px;">
+                    ★ সম্পন্ন
+                  </span>
+                <% } else if (r.status === 'rejected') { %>
+                  <span style="background: #fee2e2; color: #b91c1c; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 13.5px; display: inline-flex; align-items: center; gap: 4px;">
+                    ✕ বাতিল
+                  </span>
+                <% } %>
+              </td>
+              <td>
+                <div class="actions-group" style="justify-content: flex-end; gap: 6px;">
+                  <button type="button" class="btn-table-action" title="বিস্তারিত দেখুন" style="background: #f1f5f9; color: var(--admin-text-main); font-size: 14px; padding: 6px 12px; width: auto;" onclick="openDetailsModal(<%= r.id %>)">
+                    👁️ দেখুন
+                  </button>
+
+                  <% if (r.status !== 'approved') { %>
+                    <form action="/admin/book-reviews/<%= r.id %>/status" method="POST" style="display: inline;">
+                      <input type="hidden" name="status" value="approved">
+                      <button type="submit" class="btn-table-action btn-approve" title="অনুমোদন করুন">
+                        ✓
+                      </button>
+                    </form>
+                  <% } %>
+
+                  <form action="/admin/book-reviews/<%= r.id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('আপনি কি নিশ্চিত যে এই আবেদনটি মুছে ফেলতে চান?');">
+                    <button type="submit" class="btn-table-action btn-reject" title="মুছে ফেলুন">
+                      ✕
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        <% } else { %>
+          <tr>
+            <td colspan="7">
+              <div class="admin-empty-state" style="padding: 48px 20px; text-align: center;">
+                <div style="font-size: 40px; margin-bottom: 12px;">📚</div>
+                <div style="font-size: 20px; font-weight: 700; color: var(--admin-text-main);">কোনো বই রিভিউ আবেদন পাওয়া যায়নি</div>
+                <div style="font-size: 15px; color: var(--admin-text-sub); margin-top: 6px;">ব্যবহারকারীরা যখন বই রিভিউ ফরম জমা দেবেন, তখন সেগুলো এখানে প্রদর্শিত হবে।</div>
+                <div style="margin-top: 16px;">
+                  <a href="/submit-book-review" target="_blank" class="btn-new-action" style="display: inline-block;">
+                    বই রিভিউ ফরম দেখুন &nearr;
+                  </a>
+                </div>
+              </div>
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if (totalPages > 1) { %>
+    <div style="padding: 16px 20px; display: flex; justify-content: center; gap: 8px; border-top: 1px solid var(--admin-border);">
+      <% for (let i = 1; i <= totalPages; i++) { %>
+        <a href="/admin/book-reviews?page=<%= i %>&status=<%= statusFilter %>&q=<%= searchQuery %>" 
+           class="btn-view-site" 
+           style="<%= currentPage === i ? 'background: var(--admin-primary); color: #fff; border-color: var(--admin-primary);' : '' %> padding: 6px 14px;">
+          <%= toBengaliNumber(i) %>
+        </a>
+      <% } %>
+    </div>
+  <% } %>
+</div>
+
+<!-- Modal: Review Full Details & Status Update (Modern & Optimized) -->
+<div id="reviewDetailModal" class="bm-backdrop" style="display: none;">
+  <div class="bm-modal">
+    
+    <!-- Modal Header -->
+    <div class="bm-header">
+      <div class="bm-header-left">
+        <span class="bm-header-icon">📖</span>
+        <div style="min-width: 0;">
+          <div class="bm-header-subtitle">বই রিভিউ আবেদন বিবরণ</div>
+          <h3 class="bm-header-title" id="modalTitle">বইয়ের নাম</h3>
+        </div>
+      </div>
+      <div class="bm-header-right">
+        <span id="modalStatusBadge" class="bm-status-badge">⏳ অপেক্ষমাণ</span>
+        <button type="button" onclick="closeDetailsModal()" class="bm-close-btn" title="বন্ধ করুন">&times;</button>
+      </div>
+    </div>
+
+    <!-- Modal Scrollable Content -->
+    <div class="bm-body">
+      
+      <!-- Top Grid: Left (Cover) + Right (Key Info) -->
+      <div class="bm-top-grid">
+        
+        <!-- Left: Cover Image & Actions -->
+        <div class="bm-cover-col">
+          <div class="bm-cover-frame">
+            <img id="modalCover" src="" alt="প্রচ্ছদ" class="bm-cover-img">
+            <div id="modalCoverFallback" class="bm-cover-fallback" style="display: none;">
+              <span style="font-size: 32px;">📖</span>
+              <span style="font-size: 13px; font-weight: 700; color: #64748b; margin-top: 4px;">প্রচ্ছদ নেই</span>
+            </div>
+          </div>
+          <a id="modalCoverLink" href="" target="_blank" rel="noopener" class="bm-cover-btn" title="বড় করে দেখুন">
+            🔍 বড় প্রচ্ছদ দেখুন ↗
+          </a>
+        </div>
+
+        <!-- Right: Core Details -->
+        <div class="bm-details-col">
+          
+          <!-- Author & Submission Date -->
+          <div class="bm-meta-row">
+            <div class="bm-meta-item">
+              <span class="bm-meta-lbl">লেখক</span>
+              <div id="modalAuthor" class="bm-author-txt"></div>
+            </div>
+            <div class="bm-meta-item">
+              <span class="bm-meta-lbl">জমার তারিখ</span>
+              <div id="modalDate" class="bm-date-txt"></div>
+            </div>
+          </div>
+
+          <!-- Contact Info: Email & Phone -->
+          <div class="bm-contact-row">
+            <div class="bm-contact-box">
+              <span class="bm-contact-lbl">✉️ যোগাযোগের ইমেইল</span>
+              <a id="modalEmail" href="" class="bm-contact-val"></a>
+            </div>
+            <div class="bm-contact-box">
+              <span class="bm-contact-lbl">📞 মোবাইল নম্বর</span>
+              <a id="modalMobile" href="" class="bm-contact-val"></a>
+            </div>
+          </div>
+
+          <!-- bKash Transaction Box -->
+          <div class="bm-pay-card">
+            <div class="bm-pay-info">
+              <span class="bm-bkash-badge">bKash</span>
+              <div>
+                <div class="bm-pay-title">বিকাশ ট্রানজ্যাকশন আইডি (২০০ টাকা ফি)</div>
+                <div id="modalTrx" class="bm-trx-code"></div>
+              </div>
+            </div>
+            <button type="button" id="copyTrxBtn" onclick="copyModalTrx()" class="bm-copy-trx-btn">
+              📋 Trx কপি
+            </button>
+          </div>
+
+          <!-- Rokomari Link -->
+          <div id="modalRokWrap" class="bm-rok-row">
+            <span class="bm-rok-lbl">রকমারি লিঙ্ক:</span>
+            <a id="modalRokomari" href="" target="_blank" rel="noopener" class="bm-rok-btn">
+              🛒 রকমারিতে বইটি দেখুন &nearr;
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Book Synopsis Card -->
+      <div class="bm-synopsis-card">
+        <div class="bm-synopsis-head">
+          <span class="bm-synopsis-label">📝 বইটির পরিচিতি ও মূল বক্তব্য:</span>
+          <span id="modalWordCount" class="bm-wc-pill">০ টি শব্দ</span>
+        </div>
+        <div id="modalDesc" class="bm-synopsis-content"></div>
+      </div>
+
+      <!-- Status & Admin Notes Update Bar -->
+      <form id="modalStatusForm" action="" method="POST" class="bm-status-bar">
+        <div class="bm-status-grid">
+          <div class="bm-status-field">
+            <label class="bm-input-lbl">স্ট্যাটাস পরিবর্তন</label>
+            <select name="status" id="modalStatusSelect" class="bm-select-control">
+              <option value="pending">⏳ অপেক্ষমাণ (Pending)</option>
+              <option value="approved">✓ অনুমোদিত (Approved)</option>
+              <option value="completed">★ সম্পন্ন (Completed)</option>
+              <option value="rejected">✕ বাতিল (Rejected)</option>
+            </select>
+          </div>
+
+          <div class="bm-notes-field">
+            <label class="bm-input-lbl">অ্যাডমিন নোট (ঐচ্ছিক)</label>
+            <input type="text" name="admin_notes" id="modalAdminNotes" class="bm-input-control" placeholder="যেমন: পেমেন্ট ভেরিফাইড, রিভিউ নির্ধারিত">
+          </div>
+
+          <div class="bm-btn-field">
+            <button type="submit" class="bm-btn-save">
+              সংরক্ষণ করুন
+            </button>
+          </div>
+        </div>
+      </form>
+
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="bm-footer">
+      <button type="button" id="copyAllDetailsBtn" onclick="copyAllDetails()" class="bm-copy-all-btn">
+        📋 সম্পূর্ণ তথ্য কপি করুন
+      </button>
+      <button type="button" onclick="closeDetailsModal()" class="bm-close-footer-btn">
+        ✕ বন্ধ করুন
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  /* ==========================================================================
+     PREMIUM OPTIMIZED ADMIN MODAL STYLES (BRAND ALIGNED)
+     ========================================================================== */
+  .bm-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    animation: bmFadeIn 0.2s ease;
+  }
+  @keyframes bmFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .bm-modal {
+    background: #ffffff;
+    width: 100%;
+    max-width: 840px;
+    max-height: 94vh;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);
+    border: 1px solid #cbd5e1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: 'Kalpurush', 'Hind Siliguri', -apple-system, BlinkMacSystemFont, sans-serif;
+    animation: bmZoomIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes bmZoomIn {
+    from { transform: scale(0.96) translateY(8px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+  }
+
+  .bm-header {
+    padding: 14px 22px;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex: none;
+  }
+  .bm-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+  .bm-header-icon {
+    font-size: 22px;
+    background: #eaf5e9;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #d4f5d8;
+    flex: none;
+  }
+  .bm-header-subtitle {
+    font-size: 12px;
+    font-weight: 700;
+    color: #075603;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .bm-header-title {
+    margin: 2px 0 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 480px;
+  }
+  .bm-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: none;
+  }
+  .bm-status-badge {
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .bm-close-btn {
+    background: transparent;
+    border: none;
+    font-size: 26px;
+    color: #64748b;
+    cursor: pointer;
+    line-height: 1;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+  }
+  .bm-close-btn:hover {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+
+  /* Modal Body */
+  .bm-body {
+    padding: 18px 22px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* Top 2-Column Grid */
+  .bm-top-grid {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+  .bm-cover-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+  .bm-cover-frame {
+    width: 140px;
+    height: 196px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #f1f5f9;
+    border: 1.5px solid #cbd5e1;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+  }
+  .bm-cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .bm-cover-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+  }
+  .bm-cover-btn {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #075603;
+    text-decoration: none;
+    background: #eaf5e9;
+    border: 1px solid #d4f5d8;
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .bm-cover-btn:hover {
+    background: #075603;
+    color: #ffffff;
+  }
+
+  .bm-details-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .bm-meta-row {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 10px;
+  }
+  .bm-meta-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px 12px;
+  }
+  .bm-meta-lbl {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+  .bm-author-txt {
+    font-size: 16px;
+    font-weight: 800;
+    color: #075603;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bm-date-txt {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .bm-contact-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .bm-contact-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px 12px;
+  }
+  .bm-contact-lbl {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 2px;
+  }
+  .bm-contact-val {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #075603;
+    text-decoration: none;
+    word-break: break-all;
+    display: block;
+  }
+  .bm-contact-val:hover {
+    text-decoration: underline;
+  }
+
+  /* bKash Payment Box */
+  .bm-pay-card {
+    background: #fff5fa;
+    border: 1.5px solid #fbcfe8;
+    border-radius: 10px;
+    padding: 9px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .bm-pay-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .bm-bkash-badge {
+    background: #e2136e;
+    color: #ffffff;
+    font-size: 11.5px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 5px;
+    letter-spacing: 0.5px;
+  }
+  .bm-pay-title {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #9d174d;
+  }
+  .bm-trx-code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 16.5px;
+    font-weight: 800;
+    color: #831843;
+    letter-spacing: 1px;
+  }
+  .bm-copy-trx-btn {
+    background: #ffffff;
+    border: 1.5px solid #f472b6;
+    color: #be185d;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .bm-copy-trx-btn:hover {
+    background: #e2136e;
+    color: #ffffff;
+  }
+
+  .bm-rok-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13.5px;
+  }
+  .bm-rok-lbl {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #64748b;
+  }
+  .bm-rok-btn {
+    font-size: 13px;
+    font-weight: 700;
+    color: #075603;
+    text-decoration: none;
+    background: #eaf5e9;
+    border: 1px solid #d4f5d8;
+    padding: 3px 12px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.15s ease;
+  }
+  .bm-rok-btn:hover {
+    background: #075603;
+    color: #ffffff;
+  }
+
+  /* Synopsis Card */
+  .bm-synopsis-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #075603;
+    border-radius: 8px;
+    padding: 10px 14px;
+  }
+  .bm-synopsis-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .bm-synopsis-label {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+  .bm-wc-pill {
+    font-size: 12px;
+    font-weight: 700;
+    color: #075603;
+    background: #eaf5e9;
+    border: 1px solid #d4f5d8;
+    padding: 2px 8px;
+    border-radius: 12px;
+  }
+  .bm-synopsis-content {
+    font-size: 15px;
+    line-height: 1.65;
+    color: #334155;
+    white-space: pre-wrap;
+    max-height: 100px;
+    overflow-y: auto;
+    font-family: inherit;
+    padding-right: 4px;
+  }
+
+  /* Status & Admin Note Bar */
+  .bm-status-bar {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin: 0;
+  }
+  .bm-status-grid {
+    display: grid;
+    grid-template-columns: 180px 1fr auto;
+    gap: 10px;
+    align-items: flex-end;
+  }
+  .bm-input-lbl {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 3px;
+  }
+  .bm-select-control {
+    width: 100%;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 7px 10px;
+    border-radius: 6px;
+    border: 1.5px solid #cbd5e1;
+    background: #ffffff;
+    color: #0f172a;
+    box-sizing: border-box;
+  }
+  .bm-select-control:focus {
+    outline: none;
+    border-color: #075603;
+    box-shadow: 0 0 0 2px rgba(7, 86, 3, 0.15);
+  }
+  .bm-input-control {
+    width: 100%;
+    font-family: inherit;
+    font-size: 13.5px;
+    padding: 7px 12px;
+    border-radius: 6px;
+    border: 1.5px solid #cbd5e1;
+    background: #ffffff;
+    color: #0f172a;
+    box-sizing: border-box;
+  }
+  .bm-input-control:focus {
+    outline: none;
+    border-color: #075603;
+    box-shadow: 0 0 0 2px rgba(7, 86, 3, 0.15);
+  }
+  .bm-btn-save {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    background: #075603;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .bm-btn-save:hover {
+    background: #053b02;
+    transform: translateY(-1px);
+  }
+
+  /* Modal Footer */
+  .bm-footer {
+    padding: 12px 22px;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: none;
+  }
+  .bm-copy-all-btn {
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 700;
+    background: #ffffff;
+    color: #075603;
+    border: 1.5px solid #cbd5e1;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .bm-copy-all-btn:hover {
+    background: #eaf5e9;
+    border-color: #075603;
+  }
+  .bm-close-footer-btn {
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 700;
+    background: #ffffff;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    padding: 6px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .bm-close-footer-btn:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+  }
+
+  @media (max-width: 680px) {
+    .bm-top-grid {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+    .bm-cover-col {
+      margin: 0 auto;
+    }
+    .bm-meta-row, .bm-contact-row {
+      grid-template-columns: 1fr;
+    }
+    .bm-status-grid {
+      grid-template-columns: 1fr;
+    }
+    .bm-pay-card {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>
+
+<script>
+  var allReviews = <%- JSON.stringify(reviews || []).replace(/</g, '\\u003c') %>;
+  var reviewsMap = {};
+  allReviews.forEach(function(item) {
+    if (item && item.id) {
+      reviewsMap[item.id] = item;
+    }
+  });
+
+  var currentReview = null;
+
+  function openDetailsModal(idOrReview) {
+    var review = typeof idOrReview === 'object' ? idOrReview : reviewsMap[idOrReview];
+    if (!review) return;
+    currentReview = review;
+
+    document.getElementById('modalTitle').textContent = review.title || '-';
+    document.getElementById('modalAuthor').textContent = review.author_name || '-';
+    
+    // Status Badge
+    var statusBadge = document.getElementById('modalStatusBadge');
+    var st = review.status || 'pending';
+    if (st === 'approved') {
+      statusBadge.innerHTML = '✓ অনুমোদিত';
+      statusBadge.style.background = '#eaf5e9';
+      statusBadge.style.color = '#075603';
+      statusBadge.style.border = '1px solid #d4f5d8';
+    } else if (st === 'completed') {
+      statusBadge.innerHTML = '★ সম্পন্ন';
+      statusBadge.style.background = '#eaf5e9';
+      statusBadge.style.color = '#075603';
+      statusBadge.style.border = '1px solid #d4f5d8';
+    } else if (st === 'rejected') {
+      statusBadge.innerHTML = '✕ বাতিল';
+      statusBadge.style.background = '#fee2e2';
+      statusBadge.style.color = '#b91c1c';
+      statusBadge.style.border = '1px solid #fecaca';
+    } else {
+      statusBadge.innerHTML = '⏳ অপেক্ষমাণ';
+      statusBadge.style.background = '#fef3c7';
+      statusBadge.style.color = '#92400e';
+      statusBadge.style.border = '1px solid #fde68a';
+    }
+
+    // Date
+    var dateEl = document.getElementById('modalDate');
+    if (dateEl) {
+      if (review.created_at) {
+        var d = new Date(review.created_at);
+        dateEl.textContent = d.toLocaleDateString('bn-BD', { year: 'numeric', month: 'short', day: 'numeric' });
+      } else {
+        dateEl.textContent = '-';
+      }
+    }
+
+    // Email & Mobile
+    var emailEl = document.getElementById('modalEmail');
+    emailEl.textContent = review.email || '-';
+    emailEl.href = 'mailto:' + (review.email || '');
+
+    var mobEl = document.getElementById('modalMobile');
+    mobEl.textContent = review.mobile || '-';
+    mobEl.href = 'tel:' + (review.mobile || '');
+
+    // Trx ID
+    document.getElementById('modalTrx').textContent = review.transaction_id || '-';
+
+    // Rokomari Link
+    var rokWrap = document.getElementById('modalRokWrap');
+    var rokEl = document.getElementById('modalRokomari');
+    if (review.rokomari_url) {
+      rokWrap.style.display = 'flex';
+      rokEl.href = review.rokomari_url;
+    } else {
+      rokWrap.style.display = 'none';
+    }
+
+    // Cover Image
+    var coverEl = document.getElementById('modalCover');
+    var coverLink = document.getElementById('modalCoverLink');
+    var coverFallback = document.getElementById('modalCoverFallback');
+    if (review.cover_image) {
+      coverEl.src = review.cover_image;
+      coverLink.href = review.cover_image;
+      coverEl.style.display = 'block';
+      coverLink.style.display = 'inline-block';
+      if (coverFallback) coverFallback.style.display = 'none';
+    } else {
+      coverEl.style.display = 'none';
+      coverLink.style.display = 'none';
+      if (coverFallback) coverFallback.style.display = 'flex';
+    }
+
+    // Description & Word Count
+    var descText = review.description || '';
+    document.getElementById('modalDesc').textContent = descText;
+    var words = descText.trim() ? descText.trim().split(/\s+/).length : 0;
+    document.getElementById('modalWordCount').textContent = words + ' টি শব্দ';
+
+    // Status form
+    document.getElementById('modalStatusSelect').value = review.status || 'pending';
+    document.getElementById('modalAdminNotes').value = review.admin_notes || '';
+    document.getElementById('modalStatusForm').action = '/admin/book-reviews/' + review.id + '/status';
+
+    // Open Modal
+    var modal = document.getElementById('reviewDetailModal');
+    modal.style.display = 'flex';
+  }
+
+  function closeDetailsModal() {
+    document.getElementById('reviewDetailModal').style.display = 'none';
+  }
+
+  function copyModalTrx() {
+    if (!currentReview || !currentReview.transaction_id) return;
+    navigator.clipboard.writeText(currentReview.transaction_id).then(function() {
+      var btn = document.getElementById('copyTrxBtn');
+      var orig = btn.textContent;
+      btn.textContent = '✓ কপি হয়েছে!';
+      setTimeout(function() { btn.textContent = orig; }, 1600);
+    });
+  }
+
+  function copyAllDetails() {
+    if (!currentReview) return;
+    var text = "বইয়ের নাম: " + currentReview.title + "\n" +
+               "লেখক: " + currentReview.author_name + "\n" +
+               "ইমেইল: " + currentReview.email + "\n" +
+               "মোবাইল: " + currentReview.mobile + "\n" +
+               "বিকাশ ট্রানজ্যাকশন আইডি (২০০ টাকা): " + currentReview.transaction_id + "\n" +
+               "রকমারি লিঙ্ক: " + (currentReview.rokomari_url || 'নেই') + "\n\n" +
+               "বইটি সম্পর্কে ধারণা:\n" + currentReview.description;
+    navigator.clipboard.writeText(text).then(function() {
+      var btn = document.getElementById('copyAllDetailsBtn');
+      var orig = btn.textContent;
+      btn.textContent = '✓ সম্পূর্ণ তথ্য কপি হয়েছে!';
+      setTimeout(function() { btn.textContent = orig; }, 2000);
+    });
+  }
+
+  // Close modal when clicking backdrop or Escape key
+  document.getElementById('reviewDetailModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeDetailsModal();
+    }
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeDetailsModal();
+    }
+  });
+</script>
+
+<%- include('partials/admin_layout_end') %>

@@ -158,7 +158,25 @@
         </a>
       </li>
 
-      <!-- 7. Site Settings -->
+      <!-- 7. Book Reviews -->
+      <li class="admin-nav-item <%= typeof activeMenu !== 'undefined' && activeMenu === 'book_reviews' ? 'active' : '' %>">
+        <a href="/admin/book-reviews">
+          <div class="admin-nav-left">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            <span>Book Reviews</span>
+          </div>
+          <% if (typeof adminPendingBookReviewsCount !== 'undefined' && adminPendingBookReviewsCount > 0) { %>
+            <span class="admin-sidebar-badge" style="background: #075603; color: #ffffff; font-size: 13px; font-weight: 700; padding: 2px 8px; border-radius: 12px; margin-left: auto; border: 1px solid rgba(255,255,255,0.2);">
+              <%= adminPendingBookReviewsCount %>
+            </span>
+          <% } %>
+        </a>
+      </li>
+
+      <!-- 8. Site Settings -->
       <li class="admin-nav-item <%= typeof activeMenu !== 'undefined' && activeMenu === 'settings' ? 'active' : '' %>">
         <a href="/admin/settings">
           <div class="admin-nav-left">

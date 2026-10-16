@@ -131,15 +131,19 @@ app.use(async (req, res, next) => {
   // Realtime notification counts for Admin Topbar
   res.locals.adminPendingCount = 0;
   res.locals.adminCommentsCount = 0;
+  res.locals.adminPendingBookReviewsCount = 0;
   if (res.locals.user && (res.locals.user.role === 'admin' || res.locals.user.role === 'editor')) {
     try {
       const pendRow = await db.prepare("SELECT COUNT(1) AS total FROM posts WHERE status = 'pending'").get();
       const commRow = await db.prepare("SELECT COUNT(1) AS total FROM comments WHERE status = 'pending'").get();
+      const brRow = await db.prepare("SELECT COUNT(1) AS total FROM book_reviews WHERE status = 'pending'").get();
       res.locals.adminPendingCount = pendRow ? pendRow.total : 0;
       res.locals.adminCommentsCount = commRow ? commRow.total : 0;
+      res.locals.adminPendingBookReviewsCount = brRow ? brRow.total : 0;
     } catch (e) {
       res.locals.adminPendingCount = 0;
       res.locals.adminCommentsCount = 0;
+      res.locals.adminPendingBookReviewsCount = 0;
     }
   }
 

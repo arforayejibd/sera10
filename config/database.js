@@ -178,6 +178,31 @@ async function initDatabase() {
       `);
 
       await connection.query(`
+        CREATE TABLE IF NOT EXISTS book_reviews (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          title VARCHAR(500) NOT NULL,
+          author_name VARCHAR(255) NOT NULL,
+          email VARCHAR(191) NOT NULL,
+          mobile VARCHAR(50) NOT NULL,
+          cover_image TEXT,
+          description TEXT,
+          rokomari_url TEXT,
+          transaction_id VARCHAR(100) NOT NULL,
+          payment_amount VARCHAR(50) DEFAULT '২০০ টাকা',
+          payment_method VARCHAR(50) DEFAULT 'bkash',
+          status VARCHAR(50) DEFAULT 'pending',
+          admin_notes TEXT,
+          ip_address VARCHAR(100),
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          INDEX idx_book_reviews_status (status),
+          INDEX idx_book_reviews_email (email),
+          INDEX idx_book_reviews_created (created_at),
+          INDEX idx_book_reviews_trx (transaction_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+      `);
+
+      await connection.query(`
         CREATE TABLE IF NOT EXISTS settings (
           \`key\` VARCHAR(191) PRIMARY KEY,
           \`value\` LONGTEXT

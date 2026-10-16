@@ -14,13 +14,16 @@ router.use(async (req, res, next) => {
     const pendRow = await db.prepare("SELECT COUNT(1) AS total FROM posts WHERE status = 'pending'").get();
     const commRow = await db.prepare("SELECT COUNT(1) AS total FROM comments WHERE status = 'pending'").get();
     const userPendRow = await db.prepare("SELECT COUNT(1) AS total FROM users WHERE status IN ('pending_approval', 'pending_verification') OR (role = 'author' AND is_approved = 0)").get();
+    const brPendRow = await db.prepare("SELECT COUNT(1) AS total FROM book_reviews WHERE status = 'pending'").get();
     res.locals.adminPendingCount = pendRow ? pendRow.total : 0;
     res.locals.adminCommentsCount = commRow ? commRow.total : 0;
     res.locals.adminPendingUsersCount = userPendRow ? userPendRow.total : 0;
+    res.locals.adminPendingBookReviewsCount = brPendRow ? brPendRow.total : 0;
   } catch (err) {
     res.locals.adminPendingCount = 0;
     res.locals.adminCommentsCount = 0;
     res.locals.adminPendingUsersCount = 0;
+    res.locals.adminPendingBookReviewsCount = 0;
   }
   next();
 });
@@ -84,6 +87,11 @@ router.post('/menu', adminController.postMenu);
 // 8. Settings
 router.get('/settings', adminController.getSettings);
 router.post('/settings', adminController.postSettings);
+
+// 9. Book Review Submissions
+router.get('/book-reviews', adminController.getBookReviews);
+router.post('/book-reviews/:id/status', adminController.postUpdateBookReviewStatus);
+router.post('/book-reviews/:id/delete', adminController.deleteBookReview);
 
 module.exports = router;
 

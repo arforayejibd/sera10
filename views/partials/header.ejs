@@ -161,10 +161,22 @@
           <button type="button" class="mobile-nav-close-btn" id="mobileNavCloseBtn" aria-label="মেনু বন্ধ করুন">&times;</button>
         </div>
 
+        <!-- Mobile Drawer Dedicated Highlighted Button (Mobile Menu Only) -->
+        <div class="mobile-drawer-review-cta">
+          <a href="/submit-book-review" class="header-review-btn <%= (typeof currentPath !== 'undefined' && currentPath === '/submit-book-review') ? 'active' : '' %>" style="width: 100%; justify-content: center; padding: 11px 16px; font-size: 16px;">
+            <svg class="header-review-btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            <span>বই রিভিউ রিকুয়েস্ট</span>
+          </a>
+        </div>
+
         <!-- Menu Links Container -->
         <div class="mobile-nav-links-wrap">
           <% if (navMenu && navMenu.length) { %>
             <% navMenu.forEach(item => { %>
+              <% if (item.url === '/submit-book-review' || item.slug === 'submit-book-review') return; %>
               <% if (item.subcategories && item.subcategories.length) { %>
                 <div class="nav-item-dropdown">
                   <a href="<%= item.url %>" class="nav-menu-item dropdown-toggle <%= (typeof currentPath !== 'undefined' && (currentPath === item.url || currentPath.startsWith(item.url + '/') || (item.slug && currentPath.includes(item.slug)))) ? 'current-menu-item' : '' %>">
@@ -223,6 +235,15 @@
 
     <!-- Header Actions (Theme Toggle & Search) -->
     <div class="header-action-group">
+      <!-- Highlighted CTA Button: বই রিভিউ রিকুয়েস্ট (Placed before Light/Dark Mode switcher) -->
+      <a href="/submit-book-review" class="header-review-btn <%= (typeof currentPath !== 'undefined' && currentPath === '/submit-book-review') ? 'active' : '' %>" title="বই রিভিউ রিকুয়েস্ট">
+        <svg class="header-review-btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+        <span class="header-review-btn-text">বই রিভিউ রিকুয়েস্ট</span>
+      </a>
+
       <!-- Theme Switcher Icon Button (Cycles: Default -> Sepia -> Dark) -->
       <button class="header-theme-toggle-btn" id="globalThemeToggleBtn" type="button" onclick="toggleSiteTheme()" aria-label="মোড পরিবর্তন (সাধারণ / সেপিয়া / ডার্ক)" title="মোড পরিবর্তন (সাধারণ / সেপিয়া / ডার্ক)">
         <!-- Default (Light / Sun) -->

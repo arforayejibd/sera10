@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>বই রিভিউয়ের জন্য তথ্য জমা দিন</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&family=Noto+Serif+Bengali:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef2f3;--card:#fff;--ink:#14272c;--muted:#5b6b70;--line:#cfd9db;--brand:#0f4c5c;--accent:#e09f3e;--err:#b3261e;--ok:#1b7a4b}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Hind Siliguri","Noto Sans Bengali",system-ui,sans-serif;line-height:1.7;font-size:17px}
+header{background:var(--brand);color:#fff;padding:40px 20px 56px}
+.wrap{max-width:720px;margin:0 auto}
+h1{font-family:"Noto Serif Bengali",serif;font-size:clamp(26px,5vw,36px);line-height:1.35;margin:0 0 10px}
+header p{margin:0;opacity:.9;max-width:56ch}
+main{margin-top:-32px;padding:0 16px 48px}
+form,.result{background:var(--card);border-radius:14px;padding:28px;box-shadow:0 8px 30px rgba(15,76,92,.12);max-width:720px;margin:0 auto}
+.field{margin-bottom:22px}
+label,.lbl{display:block;font-weight:600;margin-bottom:6px}
+.hint{color:var(--muted);font-size:14px;font-weight:400}
+input[type=text],input[type=email],textarea{width:100%;font:inherit;padding:11px 14px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+textarea{min-height:200px;resize:vertical}
+input:focus,textarea:focus,.drop:focus-within{outline:3px solid rgba(224,159,62,.55);outline-offset:1px;border-color:var(--brand)}
+.drop{display:flex;gap:18px;align-items:center;border:2px dashed var(--line);border-radius:10px;padding:16px;cursor:pointer}
+.drop input{position:absolute;opacity:0;width:1px;height:1px}
+.thumb{width:96px;height:132px;flex:none;border-radius:6px;background:#e3eaec;display:grid;place-items:center;color:var(--muted);font-size:13px;text-align:center;overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.drop b{color:var(--brand)}
+.count{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin-top:4px}
+.count .over{color:var(--err);font-weight:600}
+.bar{height:5px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;width:0;background:var(--brand);transition:width .15s}
+.bar i.over{background:var(--err)}
+.pay{border:1.5px solid #e2136e;background:#fff5fa;border-radius:10px;padding:16px 18px;margin-bottom:22px}
+.pay h3{margin:0 0 6px;font-size:18px;color:#c10f5c}
+.pay ol{margin:6px 0 14px;padding-left:20px}
+.pay .num{font-weight:600;font-size:19px;letter-spacing:.5px;user-select:all}
+.pay input{text-transform:uppercase}
+.msg{color:var(--err);font-size:14px;min-height:0;margin-top:4px}
+button{font:inherit;font-weight:600;border:0;border-radius:8px;padding:13px 26px;cursor:pointer}
+.primary{background:var(--accent);color:#2a1a00;width:100%;font-size:18px}
+.primary:hover{filter:brightness(.95)}
+.ghost{background:#e3eaec;color:var(--brand)}
+button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.result{display:none}
+.result.show{display:block}
+.result h2{font-family:"Noto Serif Bengali",serif;margin:0 0 4px;color:var(--brand)}
+.sum{display:grid;grid-template-columns:150px 1fr;gap:22px;margin:20px 0}
+.sum img{width:150px;border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.sum dt{color:var(--muted);font-size:14px}
+.sum dd{margin:0 0 10px;font-weight:600}
+.sum p{margin:0;white-space:pre-wrap}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+@media(max-width:520px){form,.result{padding:20px}.sum{grid-template-columns:1fr}.drop{flex-direction:column;align-items:flex-start}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>বই রিভিউয়ের জন্য আপনার বইয়ের তথ্য দিন</h1>
+  <p>বইয়ের নাম, প্রচ্ছদ এবং সর্বোচ্চ ২০০ শব্দের পরিচিতি পাঠান। আমরা তথ্য দেখে আপনার সঙ্গে যোগাযোগ করব।</p>
+</div></header>
+
+<main>
+<form id="form" novalidate>
+  <div class="field">
+    <label for="title">বইয়ের নাম <span class="hint">(আবশ্যক)</span></label>
+    <input type="text" id="title" required autocomplete="off">
+    <div class="msg" id="e-title"></div>
+  </div>
+
+  <div class="field">
+    <label for="author">লেখকের নাম <span class="hint">(আবশ্যক)</span></label>
+    <input type="text" id="author" required autocomplete="name">
+    <div class="msg" id="e-author"></div>
+  </div>
+
+  <div class="field">
+    <label for="email">যোগাযোগের ইমেইল <span class="hint">(আবশ্যক)</span></label>
+    <input type="email" id="email" required autocomplete="email">
+    <div class="msg" id="e-email"></div>
+  </div>
+
+  <div class="field">
+    <label for="mobile">যোগাযোগের মোবাইল নম্বর <span class="hint">(আবশ্যক)</span></label>
+    <input type="text" id="mobile" inputmode="tel" placeholder="01XXXXXXXXX" autocomplete="tel" maxlength="15">
+    <div class="msg" id="e-mobile"></div>
+  </div>
+
+  <div class="field">
+    <span class="lbl">বইয়ের প্রচ্ছদ <span class="hint">(JPG, PNG বা WebP, সর্বোচ্চ ৫ MB)</span></span>
+    <label class="drop" for="cover">
+      <div class="thumb" id="thumb">ছবি নেই</div>
+      <div><b>ছবি বেছে নিন</b><br><span class="hint" id="fname">এখানে ট্যাপ বা ক্লিক করুন</span></div>
+      <input type="file" id="cover" accept="image/jpeg,image/png,image/webp">
+    </label>
+    <div class="msg" id="e-cover"></div>
+  </div>
+
+  <div class="field">
+    <label for="desc">বইটি সম্পর্কে ধারণা <span class="hint">(সর্বোচ্চ ২০০ শব্দ)</span></label>
+    <textarea id="desc" placeholder="বইটির বিষয়, মূল চরিত্র বা মূল বক্তব্য এবং কোন পাঠকের জন্য লেখা, তা সংক্ষেপে লিখুন।"></textarea>
+    <div class="bar"><i id="bar"></i></div>
+    <div class="count"><span id="wc">০ / ২০০ শব্দ</span><span id="left"></span></div>
+    <div class="msg" id="e-desc"></div>
+  </div>
+
+  <div class="field">
+    <label for="rokomari">রকমারি লিঙ্ক <span class="hint">(আবশ্যক)</span></label>
+    <input type="text" id="rokomari" inputmode="url" placeholder="https://www.rokomari.com/book/..." autocomplete="off">
+    <div class="msg" id="e-rokomari"></div>
+  </div>
+
+  <div class="pay">
+    <h3>রিভিউ ফি: ২০০ টাকা (বিকাশ)</h3>
+    <ol>
+      <li>বিকাশ অ্যাপে <b>সেন্ড মানি</b> করুন: <span class="num" id="bkash-no">০১৭৩৭৩৭৭০৯০</span></li>
+      <li>পরিমাণ: <b>২০০ টাকা</b></li>
+      <li>পেমেন্ট শেষে পাওয়া ট্রানজ্যাকশন আইডি নিচে লিখুন।</li>
+    </ol>
+    <label for="trx">বিকাশ ট্রানজ্যাকশন আইডি <span class="hint">(আবশ্যক)</span></label>
+    <input type="text" id="trx" maxlength="12" placeholder="যেমন: 8N7A6D5EE1" autocomplete="off">
+    <div class="msg" id="e-trx"></div>
+  </div>
+
+  <button class="primary" type="submit">তথ্য জমা দিন</button>
+</form>
+
+<section class="result" id="result" aria-live="polite">
+  <h2>তথ্য প্রস্তুত হয়েছে</h2>
+  <span class="hint">নিচের তথ্য ঠিক আছে কিনা দেখে নিন।</span>
+  <div class="sum">
+    <img id="r-img" alt="বইয়ের প্রচ্ছদ">
+    <dl style="margin:0">
+      <dt>বইয়ের নাম</dt><dd id="r-title"></dd>
+      <dt>লেখক</dt><dd id="r-author"></dd>
+      <dt>ইমেইল</dt><dd id="r-email"></dd>
+      <dt>মোবাইল নম্বর</dt><dd id="r-mobile"></dd>
+      <dt>বিকাশ ট্রানজ্যাকশন আইডি (২০০ টাকা)</dt><dd id="r-trx"></dd>
+      <dt>রকমারি লিঙ্ক</dt><dd id="r-rok" style="word-break:break-all"></dd>
+      <dt>বইটি সম্পর্কে</dt><dd><p id="r-desc" style="font-weight:400"></p></dd>
+    </dl>
+  </div>
+  <div class="actions">
+    <button class="ghost" id="copy" type="button">তথ্য কপি করুন</button>
+    <button class="ghost" id="edit" type="button">সম্পাদনা করুন</button>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  var MAX=200, $=function(id){return document.getElementById(id)};
+  var coverData="";
+  var bn="০১২৩৪৫৬৭৮৯";
+  function toBn(n){return String(n).replace(/\d/g,function(d){return bn[d]})}
+  function words(t){var s=t.trim();return s?s.split(/\s+/).length:0}
+
+  var desc=$("desc");
+  function updateCount(){
+    var n=words(desc.value), over=n>MAX;
+    $("wc").textContent=toBn(n)+" / "+toBn(MAX)+" শব্দ";
+    $("wc").className=over?"over":"";
+    $("left").textContent=over?toBn(n-MAX)+" শব্দ বেশি":toBn(MAX-n)+" শব্দ বাকি";
+    $("left").className=over?"over":"";
+    var b=$("bar");b.style.width=Math.min(100,n/MAX*100)+"%";b.className=over?"over":"";
+  }
+  desc.addEventListener("input",updateCount);updateCount();
+
+  $("cover").addEventListener("change",function(e){
+    var f=e.target.files[0], err=$("e-cover");
+    err.textContent="";
+    if(!f){coverData="";$("thumb").textContent="ছবি নেই";$("fname").textContent="এখানে ট্যাপ বা ক্লিক করুন";return}
+    if(!/^image\/(jpeg|png|webp)$/.test(f.type)){err.textContent="শুধু JPG, PNG বা WebP ছবি দিন।";e.target.value="";return}
+    if(f.size>5*1024*1024){err.textContent="ছবির আকার ৫ MB এর বেশি হতে পারবে না।";e.target.value="";return}
+    var r=new FileReader();
+    r.onload=function(){
+      coverData=r.result;
+      $("thumb").innerHTML="";
+      var im=new Image();im.src=coverData;im.alt="প্রচ্ছদের পূর্বরূপ";$("thumb").appendChild(im);
+      $("fname").textContent=f.name;
+    };
+    r.readAsDataURL(f);
+  });
+
+  function setErr(id,m){$("e-"+id).textContent=m;return !m}
+  $("form").addEventListener("submit",function(e){
+    e.preventDefault();
+    var ok=true;
+    ok=setErr("title",$("title").value.trim()?"":"বইয়ের নাম লিখুন।")&&ok;
+    ok=setErr("author",$("author").value.trim()?"":"লেখকের নাম লিখুন।")&&ok;
+    var em=$("email").value.trim();
+    ok=setErr("email",/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)?"":"সঠিক ইমেইল ঠিকানা দিন।")&&ok;
+    ok=setErr("cover",coverData?"":"বইয়ের প্রচ্ছদ যোগ করুন।")&&ok;
+    var n=words(desc.value);
+    ok=setErr("desc",n===0?"বইটি সম্পর্কে কিছু লিখুন।":n>MAX?"২০০ শব্দের মধ্যে লিখুন। এখন "+toBn(n)+" শব্দ আছে।":"")&&ok;
+    var rok=$("rokomari").value.trim();
+    if(rok&&!/^https?:\/\//i.test(rok)&&/^(www\.)?rokomari\.com/i.test(rok)){rok="https://"+rok;$("rokomari").value=rok}
+    ok=setErr("rokomari",!rok?"রকমারির লিঙ্ক দিন।":/^https?:\/\/(www\.)?rokomari\.com\/.+/i.test(rok)?"":"রকমারির সঠিক লিঙ্ক দিন (rokomari.com দিয়ে শুরু)।")&&ok;
+    var mob=$("mobile").value.trim().replace(/[০-৯]/g,function(d){return bn.indexOf(d)}).replace(/[\s-]/g,"");
+    ok=setErr("mobile",!mob?"মোবাইল নম্বর লিখুন।":/^(?:\+?88)?01[3-9]\d{8}$/.test(mob)?"":"সঠিক মোবাইল নম্বর দিন (যেমন: 01712345678)।")&&ok;
+    var trx=$("trx").value.trim().toUpperCase();
+    ok=setErr("trx",/^[A-Z0-9]{8,12}$/.test(trx)?"":"সঠিক বিকাশ ট্রানজ্যাকশন আইডি দিন (৮–১২ অক্ষর, ইংরেজি অক্ষর ও সংখ্যা)।")&&ok;
+    if(!ok){var first=document.querySelector(".msg:not(:empty)");if(first)first.scrollIntoView({block:"center"});return}
+
+    $("r-title").textContent=$("title").value.trim();
+    $("r-author").textContent=$("author").value.trim();
+    $("r-email").textContent=em;
+    $("r-desc").textContent=desc.value.trim();
+    $("r-img").src=coverData;
+    $("r-trx").textContent=trx;
+    $("r-rok").textContent=rok;
+    $("r-mobile").textContent=mob;
+    $("form").style.display="none";
+    $("result").classList.add("show");
+    $("result").scrollIntoView({behavior:"smooth"});
+    // এখানে সার্ভারে পাঠানোর কোড যোগ করুন (fetch/POST)
+  });
+
+  $("edit").addEventListener("click",function(){
+    $("result").classList.remove("show");$("form").style.display="";window.scrollTo(0,0);
+  });
+  $("copy").addEventListener("click",function(){
+    var t="বইয়ের নাম: "+$("r-title").textContent+"\nলেখক: "+$("r-author").textContent+"\nইমেইল: "+$("r-email").textContent+"\nমোবাইল: "+$("r-mobile").textContent+"\nবিকাশ ট্রানজ্যাকশন আইডি (২০০ টাকা): "+$("r-trx").textContent+"\nরকমারি লিঙ্ক: "+$("r-rok").textContent+"\n\n"+$("r-desc").textContent;
+    var b=$("copy");
+    function done(){b.textContent="কপি হয়েছে";setTimeout(function(){b.textContent="তথ্য কপি করুন"},1800)}
+    if(navigator.clipboard){navigator.clipboard.writeText(t).then(done,function(){})}
+  });
+})();
+</script>
+</body>
+</html>

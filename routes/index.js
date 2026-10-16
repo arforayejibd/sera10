@@ -3,6 +3,8 @@ const router = express.Router();
 const homeController = require('../controllers/homeController');
 const postController = require('../controllers/postController');
 const bookController = require('../controllers/bookController');
+const bookReviewController = require('../controllers/bookReviewController');
+const upload = require('../middleware/upload');
 const { generateSeoMeta } = require('../middleware/seo');
 const { requireAuth } = require('../middleware/auth');
 const db = require('../config/database');
@@ -24,6 +26,37 @@ router.get(['/blog', '/all-posts', '/posts', '/articles'], postController.getAll
 // Books List & Single Book
 router.get('/books', bookController.getBooksList);
 router.get('/book/:slug', bookController.getSingleBook);
+
+// Book Review Submission Form & API
+router.get(['/submit-book-review', '/book-review-request', '/book-review-form'], bookReviewController.getReviewSubmissionPage);
+router.post(
+  ['/submit-book-review', '/book-review-request', '/api/book-reviews/submit'], 
+  (req, res, next) => {
+    upload.single('cover')(req, res, function (err) {
+      if (err) {
+        const isAjax = req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'));
+        const errMsg = err.code === 'LIMIT_FILE_SIZE' 
+          ? 'ছবির আকার সর্বোচ্চ ৫ মেগাবাইট হতে পারবে।' 
+          : (err.message || 'ছবি আপলোডে সমস্যা হয়েছে।');
+        if (isAjax) {
+          return res.status(400).json({ success: false, message: errMsg });
+        }
+        return res.status(400).render('book_review_form', {
+          seo: generateSeoMeta({ title: 'বই রিভিউয়ের জন্য তথ্য পাঠান - ত্রুটি' }),
+          toBengaliNumber: res.locals.toBengaliNumber,
+          formatBengaliDate: res.locals.formatBengaliDate,
+          editorialBoard: res.locals.editorialBoard,
+          contact: res.locals.contact,
+          successMessage: null,
+          errorMessage: errMsg,
+          oldInput: req.body || {}
+        });
+      }
+      next();
+    });
+  }, 
+  bookReviewController.postSubmitReview
+);
 
 // Category Archive (Supports both /category/... and WordPress /section/...)
 router.get([
@@ -77,7 +110,7 @@ router.post(['/post/:slug/rate', '/api/post/:slug/rate', '/api/posts/:slug/rate'
 router.get('/:category/:slug', async (req, res, next) => {
   try {
     const { category, slug } = req.params;
-    const reserved = ['admin', 'api', 'vendor', 'css', 'js', 'images', 'uploads', 'fonts', 'post', 'category', 'section', 'tag', 'book', 'books', 'topic', 'author'];
+    const reserved = ['admin', 'api', 'vendor', 'css', 'js', 'images', 'uploads', 'fonts', 'post', 'category', 'section', 'tag', 'book', 'books', 'topic', 'author', 'submit-book-review', 'book-review-request', 'book-review-form'];
     if (reserved.includes(category.toLowerCase())) {
       return next();
     }

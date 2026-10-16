@@ -1,0 +1,1100 @@
+<%- include('partials/header') %>
+
+<!-- 1. TOP AFFILIATE / TRUST STRIP -->
+<section class="affiliate-top-strip">
+  <div class="site-container top-strip-inner">
+    <div class="top-strip-left">
+      <span class="top-strip-icon">✓</span>
+      <span>সেরা ১০ বই রিভিউ — লেখক ও প্রকাশকদের জন্য নিরপেক্ষ বই মূল্যায়ন ও পাঠক সংযোগ প্ল্যাটফর্ম</span>
+    </div>
+    <div class="top-strip-right">
+      <span>⚡ দ্রুত ভেরিফিকেশন</span>
+      <span>•</span>
+      <span>🇧🇩 বাংলা বই স্পেশাল</span>
+    </div>
+  </div>
+</section>
+
+<main class="page-main-content">
+  <div class="site-container">
+    
+    <!-- 2. BREADCRUMB NAVIGATION -->
+    <nav class="archive-breadcrumb" aria-label="ব্রেডক্রাম্ব">
+      <a href="/">প্রচ্ছদ</a>
+      <span class="breadcrumb-sep">/</span>
+      <a href="/category/books">বই রিভিউ</a>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">বই রিভিউ রিকুয়েস্ট</span>
+    </nav>
+
+    <!-- 3. HERO VALUE BANNER -->
+    <section class="affiliate-hero-banner" style="margin-bottom: 34px;">
+      <div class="hero-banner-content">
+        <div class="hero-pill-badge">
+          <span>📖</span>
+          <span>বই রিভিউ ও মূল্যায়ন প্ল্যাটফর্ম</span>
+        </div>
+        <h1 class="hero-banner-title">
+          আপনার বইটি পৌঁছে দিন <br><span>হাজারো সক্রিয় বইপ্রেমীর কাছে</span>
+        </h1>
+        <p class="hero-banner-desc">
+          বইয়ের প্রয়োজনীয় তথ্য, প্রচ্ছদ ও রকমারি লিংক পাঠিয়ে রিভিউয়ের রিকুয়েস্ট জমা দিন। আমাদের সম্পাদকীয় দল বইটি মূল্যায়ন করে সেরা ১০ প্ল্যাটফর্মে প্রকাশ করবে।
+        </p>
+      </div>
+    </section>
+
+    <!-- 4. MAIN FORM SECTION (FULL PAGE WIDTH MATCHING HERO BANNER) -->
+    <section class="home-section-wrap" style="width: 100%; margin-bottom: 50px;">
+      
+      <!-- Section Header -->
+      <div class="review-section-header" style="margin-bottom: 22px;">
+        <div class="section-title-wrap">
+          <span class="section-title-indicator"></span>
+          <h2 class="section-heading">বই রিভিউ রিকুয়েস্ট ফর্ম</h2>
+        </div>
+        <span class="section-header-tag" style="background: var(--brand-light, #eaf5e9); color: var(--brand-dark, #075603); border: 1px solid var(--brand-light-border, #d4f5d8); padding: 6px 16px; border-radius: 20px; font-size: 14.5px; font-weight: 700;">
+          🔒 ১০০% নিরাপদ আবেদন
+        </span>
+      </div>
+
+      <!-- Form Card Container -->
+      <div class="rf-card">
+        
+        <!-- Error Alert Box -->
+        <div id="formAlertBox" style="display: none;" class="rf-alert-box">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 20px;">⚠️</span>
+            <span id="formAlertMsg">অনুগ্রহ করে নিচের সব তথ্য সঠিকভাবে পূরণ করুন।</span>
+          </div>
+        </div>
+
+        <!-- Submission Form -->
+        <form id="bookReviewForm" action="/submit-book-review" method="POST" enctype="multipart/form-data" novalidate>
+          
+          <div class="rf-form-grid">
+            
+            <!-- 1. Book Title -->
+            <div class="rf-field-col">
+              <label for="title" class="rf-label">
+                বইয়ের নাম <span class="rf-req">*</span> <span class="rf-hint">(আবশ্যক)</span>
+              </label>
+              <input 
+                type="text" 
+                id="title" 
+                name="title" 
+                required 
+                autocomplete="off" 
+                placeholder="বইয়ের পূর্ণ নাম লিখুন"
+                class="rf-input"
+              >
+              <div class="rf-msg" id="e-title"></div>
+            </div>
+
+            <!-- 2. Author Name -->
+            <div class="rf-field-col">
+              <label for="author" class="rf-label">
+                লেখকের নাম <span class="rf-req">*</span> <span class="rf-hint">(আবশ্যক)</span>
+              </label>
+              <input 
+                type="text" 
+                id="author" 
+                name="author" 
+                required 
+                autocomplete="name" 
+                placeholder="লেখকের নাম লিখুন"
+                class="rf-input"
+              >
+              <div class="rf-msg" id="e-author"></div>
+            </div>
+
+            <!-- 3. Contact Email -->
+            <div class="rf-field-col">
+              <label for="email" class="rf-label">
+                যোগাযোগের ইমেইল <span class="rf-req">*</span> <span class="rf-hint">(আবশ্যক)</span>
+              </label>
+              <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                required 
+                autocomplete="email" 
+                placeholder="name@example.com"
+                class="rf-input"
+              >
+              <div class="rf-msg" id="e-email"></div>
+            </div>
+
+            <!-- 4. Contact Mobile -->
+            <div class="rf-field-col">
+              <label for="mobile" class="rf-label">
+                যোগাযোগের মোবাইল নম্বর <span class="rf-req">*</span> <span class="rf-hint">(আবশ্যক)</span>
+              </label>
+              <input 
+                type="text" 
+                id="mobile" 
+                name="mobile" 
+                inputmode="tel" 
+                placeholder="01XXXXXXXXX" 
+                autocomplete="tel" 
+                maxlength="15"
+                class="rf-input"
+              >
+              <div class="rf-msg" id="e-mobile"></div>
+            </div>
+
+            <!-- 5. Rokomari Link -->
+            <div class="rf-field-col">
+              <label for="rokomari" class="rf-label">
+                রকমারি লিঙ্ক <span class="rf-hint">(ঐচ্ছিক)</span>
+              </label>
+              <input 
+                type="text" 
+                id="rokomari" 
+                name="rokomari" 
+                inputmode="url" 
+                placeholder="https://www.rokomari.com/book/..." 
+                autocomplete="off"
+                class="rf-input"
+              >
+              <div class="rf-sub-hint">রকমারিতে বইটির পেজের লিঙ্ক কপি করে এখানে পেস্ট করুন।</div>
+              <div class="rf-msg" id="e-rokomari"></div>
+            </div>
+
+            <!-- 6. Book Cover File Upload -->
+            <div class="rf-field-col">
+              <label class="rf-label">
+                বইয়ের প্রচ্ছদ <span class="rf-req">*</span> <span class="rf-hint">(JPG, PNG বা WebP, সর্বোচ্চ ৫ MB)</span>
+              </label>
+              
+              <label class="rf-dropzone" for="cover" id="dropzoneLabel">
+                <div class="rf-thumb" id="thumb">ছবি নেই</div>
+                <div style="flex: 1; min-width: 0;">
+                  <div class="rf-drop-title">📷 প্রচ্ছদ নির্বাচন করুন বা ড্র্যাগ করে ছাড়ুন</div>
+                  <div class="rf-drop-sub" id="fname">এখানে ক্লিক করে স্পষ্ট বইয়ের প্রচ্ছদ নির্বাচন করুন</div>
+                </div>
+                <input type="file" id="cover" name="cover" accept="image/jpeg,image/png,image/webp" style="position: absolute; opacity: 0; width: 1px; height: 1px;">
+              </label>
+              <div class="rf-msg" id="e-cover"></div>
+            </div>
+
+            <!-- 7. Book Description / Synopsis (Left Column) -->
+            <div class="rf-field-col">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 7px;">
+                <label for="desc" class="rf-label" style="margin-bottom: 0;">
+                  বইটি সম্পর্কে ধারণা <span class="rf-req">*</span> <span class="rf-hint">(সর্বোচ্চ ২০০ শব্দ)</span>
+                </label>
+                <span id="wc" class="rf-counter">০ / ২০০ শব্দ</span>
+              </div>
+              
+              <textarea 
+                id="desc" 
+                name="description" 
+                rows="7"
+                placeholder="বইটির বিষয়বস্তু, মূল চরিত্র বা মূল বক্তব্য এবং কোন ধরনের পাঠকের জন্য বইটি লেখা, তা সংক্ষেপে ২০০ শব্দের মধ্যে লিখুন।"
+                class="rf-textarea"
+              ></textarea>
+              
+              <div class="rf-bar-wrap">
+                <i class="rf-bar-inner" id="bar"></i>
+              </div>
+              
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+                <div class="rf-msg" id="e-desc" style="margin: 0;"></div>
+                <span id="left" class="rf-counter-sub">২০০ শব্দ বাকি</span>
+              </div>
+            </div>
+
+            <!-- 8. Payment Section (bKash) (Right Column) -->
+            <div class="rf-field-col">
+              <div class="rf-pay-box">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="rf-pay-pill">bKash</span>
+                    <h3 class="rf-pay-title">রিভিউ ফি: ২০০ টাকা (বিকাশ)</h3>
+                  </div>
+                  <span class="rf-send-tag">সেন্ড মানি</span>
+                </div>
+
+                <ol class="rf-pay-steps">
+                  <li>বিকাশ অ্যাপে <b>সেন্ড মানি</b> করুন: 
+                    <span class="rf-num" id="bkash-no">০১৭৩৭৩৭৭০৯০</span>
+                    <button type="button" id="copyBkashBtn" onclick="copyBkashNumber()" class="rf-copy-btn">কপি করুন</button>
+                  </li>
+                  <li>পরিমাণ: <b>২০০ টাকা</b></li>
+                  <li>পেমেন্ট সম্পন্ন হওয়ার পর প্রাপ্ত ট্রানজ্যাকশন আইডি (TrxID) নিচে সঠিকভাবে লিখুন।</li>
+                </ol>
+
+                <div>
+                  <label for="trx" class="rf-label" style="font-size: 15px; margin-bottom: 6px;">
+                    বিকাশ ট্রানজ্যাকশন আইডি <span class="rf-req">*</span> <span class="rf-hint">(যেমন: 8N7A6D5EE1)</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    id="trx" 
+                    name="trx" 
+                    maxlength="14" 
+                    placeholder="যেমন: 8N7A6D5EE1" 
+                    autocomplete="off"
+                    class="rf-input"
+                    style="text-transform: uppercase; font-weight: 700; letter-spacing: 1px;"
+                  >
+                  <div class="rf-msg" id="e-trx"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 9. Full Width Submit Button -->
+            <div class="rf-col-full" style="margin-top: 10px;">
+              <button class="rf-submit-btn" type="submit" id="submitBtn">
+                <span id="btnText" style="display: inline-flex; align-items: center; gap: 10px;">
+                  <span>তথ্য জমা দিন</span>
+                  <span style="font-size: 20px;">&raquo;</span>
+                </span>
+                <span id="btnSpinner" style="display: none; align-items: center; gap: 8px;">
+                  <svg style="animation: spin 1s linear infinite; width: 22px; height: 22px;" viewBox="0 0 24 24" fill="none">
+                    <circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  জমা দেওয়া হচ্ছে...
+                </span>
+              </button>
+            </div>
+
+          </div>
+        </form>
+
+        <!-- Confirmation / Result Screen (shown on successful submission) -->
+        <section class="rf-result-card" id="resultCard" style="display: none;" aria-live="polite">
+          
+          <div class="rf-result-banner">
+            <div class="rf-result-icon">✓</div>
+            <div>
+              <h2 class="rf-result-banner-title">তথ্য সফলভাবে জমা নেওয়া হয়েছে!</h2>
+              <p class="rf-result-banner-desc">
+                আপনার বই রিভিউ আবেদন ও বিকাশ লেনদেন ভেরিফাই করে আমাদের টিম দ্রুত আপনার সাথে যোগাযোগ করবে।
+              </p>
+            </div>
+          </div>
+
+          <div class="rf-result-details">
+            <h3 class="rf-details-head">জমা দেওয়া তথ্যের বিবরণ</h3>
+            
+            <div class="rf-sum-layout">
+              <div class="rf-sum-img-wrap">
+                <img id="r-img" src="" alt="বইয়ের প্রচ্ছদ" class="rf-sum-img">
+              </div>
+              
+              <div class="rf-sum-fields">
+                <div class="rf-sum-item">
+                  <span class="rf-dt">বইয়ের নাম</span>
+                  <div id="r-title" class="rf-dd-title"></div>
+                </div>
+
+                <div class="rf-sum-item">
+                  <span class="rf-dt">লেখক</span>
+                  <div id="r-author" class="rf-dd-author"></div>
+                </div>
+
+                <div class="rf-sum-item">
+                  <span class="rf-dt">যোগাযোগের ইমেইল</span>
+                  <div id="r-email" class="rf-dd"></div>
+                </div>
+
+                <div class="rf-sum-item">
+                  <span class="rf-dt">মোবাইল নম্বর</span>
+                  <div id="r-mobile" class="rf-dd"></div>
+                </div>
+
+                <div class="rf-sum-item">
+                  <span class="rf-dt">বিকাশ ট্রানজ্যাকশন আইডি (২০০ টাকা ফি)</span>
+                  <div>
+                    <span id="r-trx" class="rf-trx-tag"></span>
+                  </div>
+                </div>
+
+                <div class="rf-sum-item">
+                  <span class="rf-dt">রকমারি লিঙ্ক</span>
+                  <div id="r-rok" class="rf-dd-link"></div>
+                </div>
+
+                <div class="rf-sum-item rf-col-full">
+                  <span class="rf-dt">বইটি সম্পর্কে ধারণা</span>
+                  <p id="r-desc" class="rf-dd-desc"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rf-action-group">
+            <button class="rf-btn rf-btn-primary" id="copy" type="button">
+              📋 বিবরণ কপি করুন
+            </button>
+            <button class="rf-btn rf-btn-secondary" id="submitAnother" type="button">
+              + আরেকটি বই রিভিউ রিকুয়েস্ট পাঠান
+            </button>
+            <a href="/" class="rf-btn rf-btn-outline">
+              হোমপেজে ফিরে যান
+            </a>
+          </div>
+        </section>
+
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<style>
+  /* Book Review Form - Theme & Brand System Integration */
+  .rf-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: 18px;
+    padding: 38px 40px;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* 2-Column Responsive Form Grid */
+  .rf-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 30px;
+  }
+  .rf-field-col {
+    display: flex;
+    flex-direction: column;
+  }
+  .rf-col-full {
+    grid-column: 1 / -1;
+  }
+
+  .rf-label {
+    display: block;
+    font-weight: 700;
+    color: var(--text-heading);
+    margin-bottom: 7px;
+    font-size: 16px;
+    line-height: 1.4;
+  }
+  .rf-req {
+    color: #dc2626;
+  }
+  .rf-hint {
+    color: var(--text-muted);
+    font-size: 13.5px;
+    font-weight: 500;
+  }
+  .rf-sub-hint {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 5px;
+  }
+  .rf-input, .rf-textarea {
+    width: 100%;
+    font-family: inherit;
+    font-size: 16px;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--bg-input);
+    color: var(--text-heading);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    box-sizing: border-box;
+  }
+  .rf-input:focus, .rf-textarea:focus {
+    outline: none;
+    border-color: var(--brand-dark, #075603);
+    box-shadow: 0 0 0 3px rgba(7, 86, 3, 0.15);
+  }
+  .rf-textarea {
+    resize: vertical;
+    min-height: 156px;
+    line-height: 1.6;
+    flex: 1;
+  }
+  .rf-dropzone {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    padding: 14px 18px;
+    cursor: pointer;
+    background: var(--bg-muted);
+    transition: all 0.2s ease;
+    flex: 1;
+    min-height: 90px;
+    box-sizing: border-box;
+  }
+  .rf-dropzone:hover, .rf-dropzone:focus-within {
+    border-color: var(--brand-dark, #075603);
+    background: var(--brand-light, #f0ffef);
+  }
+  html.theme-dark .rf-dropzone:hover, html.theme-dark .rf-dropzone:focus-within {
+    background: rgba(6, 130, 0, 0.12);
+  }
+  .rf-thumb {
+    width: 64px;
+    height: 86px;
+    flex: none;
+    border-radius: 6px;
+    background: var(--bg-surface);
+    display: grid;
+    place-items: center;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    overflow: hidden;
+    border: 1px solid var(--border-card);
+    box-shadow: var(--shadow-sm);
+  }
+  .rf-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .rf-drop-title {
+    font-weight: 700;
+    color: var(--brand-dark, #075603);
+    font-size: 15.5px;
+    margin-bottom: 2px;
+  }
+  html.theme-dark .rf-drop-title {
+    color: #34d399;
+  }
+  .rf-drop-sub {
+    color: var(--text-muted);
+    font-size: 13.5px;
+  }
+  .rf-counter {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+  .rf-counter-sub {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .rf-bar-wrap {
+    height: 6px;
+    background: var(--border-color);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .rf-bar-inner {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--brand-dark, #075603);
+    transition: width 0.15s ease, background-color 0.2s ease;
+  }
+  .rf-bar-inner.over {
+    background: #dc2626;
+  }
+  #wc.over, #left.over {
+    color: #dc2626 !important;
+    font-weight: 700 !important;
+  }
+  .rf-alert-box {
+    background: #fee2e2;
+    border: 1.5px solid #ef4444;
+    color: #b91c1c;
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-bottom: 24px;
+    font-size: 15.5px;
+    font-weight: 600;
+  }
+  html.theme-dark .rf-alert-box {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: #ef4444;
+    color: #fca5a5;
+  }
+  .rf-msg {
+    color: #dc2626;
+    font-size: 13.5px;
+    min-height: 18px;
+    margin-top: 5px;
+    font-weight: 600;
+  }
+  html.theme-dark .rf-msg {
+    color: #f87171;
+  }
+
+  /* bKash Payment Box */
+  .rf-pay-box {
+    border: 1.5px solid rgba(226, 19, 110, 0.35);
+    background: rgba(226, 19, 110, 0.04);
+    border-radius: 14px;
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    box-sizing: border-box;
+  }
+  html.theme-dark .rf-pay-box {
+    background: rgba(226, 19, 110, 0.08);
+    border-color: rgba(226, 19, 110, 0.45);
+  }
+  .rf-pay-pill {
+    background: #e2136e;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 13px;
+    padding: 3px 9px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+  }
+  .rf-pay-title {
+    margin: 0;
+    font-size: 17.5px;
+    font-weight: 800;
+    color: #c10f5c;
+  }
+  html.theme-dark .rf-pay-title {
+    color: #f472b6;
+  }
+  .rf-send-tag {
+    font-size: 13px;
+    color: #9d174d;
+    font-weight: 700;
+    background: rgba(226, 19, 110, 0.08);
+    padding: 3px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(226, 19, 110, 0.2);
+  }
+  html.theme-dark .rf-send-tag {
+    color: #fbcfe8;
+  }
+  .rf-pay-steps {
+    margin: 0 0 14px 18px;
+    padding: 0;
+    color: var(--text-main);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .rf-num {
+    font-weight: 800;
+    font-size: 17.5px;
+    letter-spacing: 0.5px;
+    color: #be185d;
+    user-select: all;
+  }
+  html.theme-dark .rf-num {
+    color: #f472b6;
+  }
+  .rf-copy-btn {
+    margin-left: 8px;
+    background: rgba(226, 19, 110, 0.1);
+    border: 1px solid rgba(226, 19, 110, 0.3);
+    color: #be185d;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  html.theme-dark .rf-copy-btn {
+    color: #fbcfe8;
+    border-color: rgba(244, 114, 182, 0.4);
+  }
+  .rf-copy-btn:hover {
+    background: #e2136e;
+    color: #ffffff;
+  }
+
+  /* Submit Button (Strict Brand Identity: #075603) */
+  .rf-submit-btn {
+    font-family: inherit;
+    font-size: 19px;
+    font-weight: 800;
+    background: var(--brand-dark, #075603);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 15px 32px;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(7, 86, 3, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .rf-submit-btn:hover {
+    background: var(--brand-primary-hover, #056800);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(7, 86, 3, 0.32);
+  }
+  .rf-submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* Result Screen */
+  .rf-result-banner {
+    background: var(--brand-light, #f0ffef);
+    border: 1.5px solid var(--brand-dark, #075603);
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  html.theme-dark .rf-result-banner {
+    background: rgba(6, 130, 0, 0.12);
+    border-color: #34d399;
+  }
+  .rf-result-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--brand-dark, #075603);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex: none;
+  }
+  .rf-result-banner-title {
+    margin: 0 0 4px;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--brand-dark, #075603);
+  }
+  html.theme-dark .rf-result-banner-title {
+    color: #34d399;
+  }
+  .rf-result-banner-desc {
+    margin: 0;
+    font-size: 15px;
+    color: var(--text-main);
+    opacity: 0.95;
+    line-height: 1.6;
+  }
+  .rf-result-details {
+    border: 1px solid var(--border-card);
+    border-radius: 14px;
+    padding: 28px;
+    background: var(--bg-muted);
+    margin-bottom: 24px;
+  }
+  .rf-details-head {
+    margin: 0 0 18px;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-heading);
+    border-bottom: 1px solid var(--border-card);
+    padding-bottom: 10px;
+  }
+  .rf-sum-layout {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 28px;
+  }
+  .rf-sum-img {
+    width: 160px;
+    height: 224px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-card);
+  }
+  .rf-sum-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 24px;
+  }
+  .rf-sum-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .rf-dt {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .rf-dd {
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--text-heading);
+  }
+  .rf-dd-title {
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--text-heading);
+  }
+  .rf-dd-author {
+    font-size: 16.5px;
+    font-weight: 700;
+    color: var(--brand-dark, #075603);
+  }
+  html.theme-dark .rf-dd-author {
+    color: #34d399;
+  }
+  .rf-dd-link {
+    font-size: 14.5px;
+    word-break: break-all;
+    color: var(--brand-dark, #075603);
+    font-weight: 600;
+  }
+  html.theme-dark .rf-dd-link {
+    color: #34d399;
+  }
+  .rf-dd-desc {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-main);
+    white-space: pre-wrap;
+    margin: 0;
+  }
+  .rf-trx-tag {
+    font-weight: 800;
+    font-size: 16px;
+    background: rgba(226, 19, 110, 0.08);
+    border: 1px solid rgba(226, 19, 110, 0.3);
+    color: #c10f5c;
+    padding: 3px 10px;
+    border-radius: 6px;
+    display: inline-block;
+  }
+  html.theme-dark .rf-trx-tag {
+    color: #f472b6;
+  }
+  .rf-action-group {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .rf-btn {
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 15px;
+    border-radius: 8px;
+    padding: 12px 24px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+  .rf-btn-primary {
+    background: var(--brand-dark, #075603);
+    color: #ffffff;
+  }
+  .rf-btn-primary:hover {
+    background: var(--brand-primary-hover, #056800);
+  }
+  .rf-btn-secondary {
+    background: var(--border-color);
+    color: var(--text-heading);
+  }
+  .rf-btn-secondary:hover {
+    filter: brightness(0.95);
+  }
+  .rf-btn-outline {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+  }
+  .rf-btn-outline:hover {
+    color: var(--text-heading);
+    border-color: var(--text-muted);
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 860px) {
+    .rf-card {
+      padding: 24px 18px;
+      border-radius: 14px;
+    }
+    .rf-form-grid {
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+    .rf-sum-layout {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+    .rf-sum-img-wrap {
+      display: flex;
+      justify-content: center;
+    }
+    .rf-sum-fields {
+      grid-template-columns: 1fr;
+      gap: 14px;
+      text-align: left;
+    }
+    .rf-dropzone {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 14px;
+    }
+    .rf-pay-box {
+      padding: 18px 16px;
+    }
+    .rf-result-banner {
+      flex-direction: column;
+      text-align: center;
+      padding: 18px 14px;
+    }
+    .rf-action-group {
+      flex-direction: column;
+    }
+    .rf-btn {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+(function(){
+  var MAX = 200;
+  var $ = function(id) { return document.getElementById(id); };
+  var coverData = "";
+  var coverFile = null;
+  var bn = "০১২৩৪৫৬৭৮৯";
+
+  function toBn(n) {
+    return String(n).replace(/\d/g, function(d) { return bn[d]; });
+  }
+
+  function words(t) {
+    var s = (t || "").trim();
+    return s ? s.split(/\s+/).length : 0;
+  }
+
+  window.copyBkashNumber = function() {
+    var num = "01737377090";
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(num).then(function() {
+        var b = $("copyBkashBtn");
+        b.textContent = "কপি হয়েছে!";
+        setTimeout(function() { b.textContent = "কপি করুন"; }, 1600);
+      });
+    }
+  };
+
+  // Word counter
+  var desc = $("desc");
+  function updateCount() {
+    var n = words(desc.value);
+    var over = n > MAX;
+    $("wc").textContent = toBn(n) + " / " + toBn(MAX) + " শব্দ";
+    $("wc").className = "rf-counter" + (over ? " over" : "");
+    $("left").textContent = over ? (toBn(n - MAX) + " শব্দ বেশি") : (toBn(MAX - n) + " শব্দ বাকি");
+    $("left").className = "rf-counter-sub" + (over ? " over" : "");
+    var b = $("bar");
+    b.style.width = Math.min(100, (n / MAX) * 100) + "%";
+    b.className = "rf-bar-inner" + (over ? " over" : "");
+  }
+  desc.addEventListener("input", updateCount);
+  updateCount();
+
+  // Cover image preview
+  $("cover").addEventListener("change", function(e) {
+    var f = e.target.files[0];
+    var err = $("e-cover");
+    err.textContent = "";
+    if (!f) {
+      coverData = "";
+      coverFile = null;
+      $("thumb").textContent = "ছবি নেই";
+      $("fname").textContent = "এখানে ক্লিক করে স্পষ্ট বইয়ের প্রচ্ছদ নির্বাচন করুন";
+      return;
+    }
+    if (!/^image\/(jpeg|png|webp|jpg)$/i.test(f.type)) {
+      err.textContent = "শুধুমাত্র JPG, PNG বা WebP ছবি দিন।";
+      e.target.value = "";
+      return;
+    }
+    if (f.size > 5 * 1024 * 1024) {
+      err.textContent = "ছবির আকার ৫ MB এর বেশি হতে পারবে না।";
+      e.target.value = "";
+      return;
+    }
+    coverFile = f;
+    var r = new FileReader();
+    r.onload = function() {
+      coverData = r.result;
+      $("thumb").innerHTML = "";
+      var im = new Image();
+      im.src = coverData;
+      im.alt = "প্রচ্ছদের পূর্বরূপ";
+      $("thumb").appendChild(im);
+      $("fname").textContent = f.name;
+    };
+    r.readAsDataURL(f);
+  });
+
+  function setErr(id, m) {
+    var el = $("e-" + id);
+    if (el) el.textContent = m;
+    return !m;
+  }
+
+  // Handle Form Submit
+  $("bookReviewForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    var alertBox = $("formAlertBox");
+    alertBox.style.display = "none";
+
+    var ok = true;
+    ok = setErr("title", $("title").value.trim() ? "" : "বইয়ের নাম লিখুন।") && ok;
+    ok = setErr("author", $("author").value.trim() ? "" : "লেখকের নাম লিখুন।") && ok;
+
+    var em = $("email").value.trim();
+    ok = setErr("email", /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em) ? "" : "সঠিক ইমেইল ঠিকানা দিন।") && ok;
+
+    var mob = $("mobile").value.trim().replace(/[০-৯]/g, function(d) { return bn.indexOf(d); }).replace(/[\s-]/g, "");
+    ok = setErr("mobile", !mob ? "মোবাইল নম্বর লিখুন।" : /^(?:\+?88)?01[3-9]\d{8}$/.test(mob) ? "" : "সঠিক মোবাইল নম্বর দিন (যেমন: 01712345678)।") && ok;
+
+    ok = setErr("cover", (coverData || coverFile) ? "" : "বইয়ের প্রচ্ছদ নির্বাচন করুন।") && ok;
+
+    var n = words(desc.value);
+    ok = setErr("desc", n === 0 ? "বইটি সম্পর্কে ধারণা লিখুন।" : n > MAX ? ("২০০ শব্দের মধ্যে লিখুন। এখন " + toBn(n) + " শব্দ আছে।") : "") && ok;
+
+    var rok = $("rokomari").value.trim();
+    if (rok) {
+      if (!/^https?:\/\//i.test(rok) && /^(www\.)?rokomari\.com/i.test(rok)) {
+        rok = "https://" + rok;
+        $("rokomari").value = rok;
+      }
+      ok = setErr("rokomari", /^https?:\/\/(www\.)?rokomari\.com\/.+/i.test(rok) ? "" : "রকমারির লিঙ্ক দিলে সঠিক লিঙ্ক দিন (rokomari.com দিয়ে শুরু)।") && ok;
+    } else {
+      setErr("rokomari", "");
+    }
+
+    var trx = $("trx").value.trim().toUpperCase();
+    $("trx").value = trx;
+    ok = setErr("trx", /^[A-Z0-9]{8,14}$/.test(trx) ? "" : "সঠিক বিকাশ ট্রানজ্যাকশন আইডি দিন (৮–১৪ অক্ষর ও সংখ্যা)।") && ok;
+
+    if (!ok) {
+      alertBox.style.display = "block";
+      var first = document.querySelector(".rf-msg:not(:empty)");
+      if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+
+    // Prepare FormData for server submission
+    var formData = new FormData();
+    formData.append("title", $("title").value.trim());
+    formData.append("author", $("author").value.trim());
+    formData.append("email", em);
+    formData.append("mobile", mob);
+    formData.append("description", desc.value.trim());
+    formData.append("rokomari", rok);
+    formData.append("trx", trx);
+    if (coverFile) {
+      formData.append("cover", coverFile);
+    }
+
+    // UI Loading State
+    var submitBtn = $("submitBtn");
+    submitBtn.disabled = true;
+    $("btnText").style.display = "none";
+    $("btnSpinner").style.display = "inline-flex";
+
+    fetch("/submit-book-review", {
+      method: "POST",
+      body: formData,
+      headers: {
+        "Accept": "application/json"
+      }
+    })
+    .then(function(res) {
+      return res.json().then(function(data) {
+        return { status: res.status, data: data };
+      });
+    })
+    .then(function(result) {
+      submitBtn.disabled = false;
+      $("btnText").style.display = "inline-flex";
+      $("btnSpinner").style.display = "none";
+
+      if (result.status >= 200 && result.status < 300 && result.data.success) {
+        // Success! Populate result summary card
+        var info = result.data.data;
+        $("r-title").textContent = info.title;
+        $("r-author").textContent = info.author_name;
+        $("r-email").textContent = info.email;
+        $("r-mobile").textContent = info.mobile;
+        $("r-trx").textContent = info.transaction_id;
+        $("r-rok").textContent = info.rokomari_url || "দেওয়া হয়নি";
+        $("r-desc").textContent = info.description;
+        $("r-img").src = info.cover_image || coverData;
+
+        $("bookReviewForm").style.display = "none";
+        $("resultCard").style.display = "block";
+        $("resultCard").scrollIntoView({ behavior: "smooth" });
+      } else {
+        alertBox.style.display = "block";
+        $("formAlertMsg").textContent = (result.data && result.data.message) ? result.data.message : "তথ্য জমা দেওয়ার সময় সমস্যা হয়েছে।";
+        alertBox.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    })
+    .catch(function(err) {
+      submitBtn.disabled = false;
+      $("btnText").style.display = "inline-flex";
+      $("btnSpinner").style.display = "none";
+      alertBox.style.display = "block";
+      $("formAlertMsg").textContent = "সার্ভারের সাথে সংযোগ করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।";
+      alertBox.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  });
+
+  // Copy submitted summary
+  $("copy").addEventListener("click", function() {
+    var t = "বইয়ের নাম: " + $("r-title").textContent + "\n" +
+            "লেখক: " + $("r-author").textContent + "\n" +
+            "ইমেইল: " + $("r-email").textContent + "\n" +
+            "মোবাইল: " + $("r-mobile").textContent + "\n" +
+            "বিকাশ ট্রানজ্যাকশন আইডি (২০০ টাকা): " + $("r-trx").textContent + "\n" +
+            "রকমারি লিঙ্ক: " + $("r-rok").textContent + "\n\n" +
+            "বইটি সম্পর্কে ধারণা:\n" + $("r-desc").textContent;
+    var b = $("copy");
+    function done() {
+      b.textContent = "✓ তথ্য কপি হয়েছে";
+      setTimeout(function() { b.textContent = "📋 বিবরণ কপি করুন"; }, 1800);
+    }
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(t).then(done, function() {});
+    }
+  });
+
+  // Submit another review
+  $("submitAnother").addEventListener("click", function() {
+    $("bookReviewForm").reset();
+    coverData = "";
+    coverFile = null;
+    $("thumb").textContent = "ছবি নেই";
+    $("fname").textContent = "এখানে ক্লিক করে স্পষ্ট বইয়ের প্রচ্ছদ নির্বাচন করুন";
+    updateCount();
+    $("resultCard").style.display = "none";
+    $("bookReviewForm").style.display = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+})();
+</script>
+
+<%- include('partials/footer') %>
