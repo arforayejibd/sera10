@@ -28,9 +28,10 @@ router.get('/books', bookController.getBooksList);
 router.get('/book/:slug', bookController.getSingleBook);
 
 // Book Review Submission Form & API
-router.get(['/submit-book-review', '/book-review-request', '/book-review-form'], bookReviewController.getReviewSubmissionPage);
+router.get('/submit-book-review', (req, res) => res.redirect(301, '/book-review-request'));
+router.get(['/book-review-request', '/book-review-form'], bookReviewController.getReviewSubmissionPage);
 router.post(
-  ['/submit-book-review', '/book-review-request', '/api/book-reviews/submit'], 
+  ['/book-review-request', '/submit-book-review', '/api/book-reviews/submit'], 
   (req, res, next) => {
     upload.single('cover')(req, res, function (err) {
       if (err) {

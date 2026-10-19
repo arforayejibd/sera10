@@ -19,20 +19,20 @@ function countWords(text) {
 }
 
 /**
- * GET /submit-book-review
+ * GET /book-review-request
  * Render the public Book Review Submission Form page
  */
 exports.getReviewSubmissionPage = async (req, res) => {
   try {
     const breadcrumbs = [
       { name: 'প্রচ্ছদ', url: '/' },
-      { name: 'বই রিভিউ রিকুয়েস্ট', url: '/submit-book-review' }
+      { name: 'বই রিভিউ রিকুয়েস্ট', url: '/book-review-request' }
     ];
 
     const seo = generateSeoMeta({
       title: 'বই রিভিউ রিকুয়েস্ট - সেরা ১০',
       description: 'সেরা ১০ রিভিউ পোর্টালে আপনার বইয়ের বিস্তারিত রিভিউ প্রকাশের জন্য বই রিভিউ রিকুয়েস্ট পাঠান।',
-      url: '/submit-book-review',
+      url: '/book-review-request',
       schema: getBreadcrumbSchema(breadcrumbs)
     });
 
@@ -59,7 +59,7 @@ exports.getReviewSubmissionPage = async (req, res) => {
 };
 
 /**
- * POST /submit-book-review
+ * POST /book-review-request
  * Handle form submission with cover image upload and validation
  */
 exports.postSubmitReview = async (req, res) => {

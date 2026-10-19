@@ -299,6 +299,7 @@ exports.getSitemap = async (req, res) => {
     xml += `  <url><loc>${SITE_URL}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>\n`;
     xml += `  <url><loc>${SITE_URL}/authors</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>\n`;
     xml += `  <url><loc>${SITE_URL}/books</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>\n`;
+    xml += `  <url><loc>${SITE_URL}/book-review-request</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>\n`;
     xml += `  <url><loc>${SITE_URL}/terms</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>\n`;
 
     // Categories

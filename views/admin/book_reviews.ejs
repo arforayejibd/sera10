@@ -1,7 +1,7 @@
 <%- include('partials/admin_layout_start', { 
   pageTitle: 'Book Review Submissions', 
   pageBreadcrumb: 'Book Reviews',
-  topbarButton: { text: '↗ Visit Review Form', url: '/submit-book-review' }
+  topbarButton: { text: '↗ Visit Review Form', url: '/book-review-request' }
 }) %>
 
 <% if (typeof successNotice !== 'undefined' && successNotice) { %>
@@ -193,7 +193,7 @@
                 <div style="font-size: 20px; font-weight: 700; color: var(--admin-text-main);">কোনো বই রিভিউ আবেদন পাওয়া যায়নি</div>
                 <div style="font-size: 15px; color: var(--admin-text-sub); margin-top: 6px;">ব্যবহারকারীরা যখন বই রিভিউ ফরম জমা দেবেন, তখন সেগুলো এখানে প্রদর্শিত হবে।</div>
                 <div style="margin-top: 16px;">
-                  <a href="/submit-book-review" target="_blank" class="btn-new-action" style="display: inline-block;">
+                  <a href="/book-review-request" target="_blank" class="btn-new-action" style="display: inline-block;">
                     বই রিভিউ ফরম দেখুন &nearr;
                   </a>
                 </div>

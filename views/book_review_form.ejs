@@ -69,7 +69,7 @@
         </div>
 
         <!-- Submission Form -->
-        <form id="bookReviewForm" action="/submit-book-review" method="POST" enctype="multipart/form-data" novalidate>
+        <form id="bookReviewForm" action="/book-review-request" method="POST" enctype="multipart/form-data" novalidate>
           
           <div class="rf-form-grid">
             
@@ -1014,7 +1014,7 @@
     $("btnText").style.display = "none";
     $("btnSpinner").style.display = "inline-flex";
 
-    fetch("/submit-book-review", {
+    fetch("/book-review-request", {
       method: "POST",
       body: formData,
       headers: {
